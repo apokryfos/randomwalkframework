@@ -7,8 +7,7 @@ using QuickGraph;
 
 namespace GraphSerializationFramework
 {
-
-    
+	
     public static class PrefferedGenericDataTypes<TKey, TValue>
     {
         public static Type PrefferedDictionaryType = typeof(Dictionary<TKey, TValue>);

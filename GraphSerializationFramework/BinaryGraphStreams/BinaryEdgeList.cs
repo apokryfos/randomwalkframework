@@ -7,12 +7,13 @@ using QuickGraph;
 using GraphSerializationFramework.GraphStreamFramework;
 using ProgressingUtilities;
 using GraphSerializationFramework.BinaryGraphStreams;
+using QuickGraph.Collections;
 
 namespace GraphSerializationFramework
 {
 
 
-    public class BinaryEdgeListReader : GraphStreamBase, IGraphReader
+	public class BinaryEdgeListReader : IGraphReader<int, Edge<int>>
     {
         
         protected BinaryReader stream;
@@ -26,8 +27,7 @@ namespace GraphSerializationFramework
         public BinaryEdgeListReader(string file, int bufferSize)
         {   
             stream = new BinaryReader(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize));            
-            this.file = file;
-            caps = GraphStreamCaps.AdjecencyStreamable | GraphStreamCaps.EdgeStreamable;
+            this.file = file;            
             this.bufferSize = bufferSize / sizeof(int);
         }
 
@@ -36,12 +36,7 @@ namespace GraphSerializationFramework
             Dispose();
         }
 
-        public override string[] SupportedExtensions
-        {
-            get { return new string[] { ".bel", ".sbel" }; }
-        }
-
-        protected void ReadAndMergeGraph(IMutableVertexAndEdgeListGraph<int, Edge<int>> g)
+		protected void ReadAndMergeGraph(IMutableVertexAndEdgeListGraph<int, Edge<int>> g)
         {
 
             var el = ReadEdgeList();            
@@ -83,6 +78,31 @@ namespace GraphSerializationFramework
 
 
         #region IGraphReader Members
+
+		public IVertexEdgeDictionary<int, Edge<int>> ReadAdjecencyList() {
+			if (stream.BaseStream.Position == sizeof(int))
+				OnProgressStarted();
+			if (stream.BaseStream.Position == stream.BaseStream.Length) {
+				OnProgressDone();
+				return null;
+			}
+
+			IVertexEdgeDictionary<int, Edge<int>> adjlist = new VertexEdgeDictionary<int, Edge<int>>();
+			var el = ReadEdgeList();
+			foreach (var e in el) {
+				IEdgeList<int, Edge<int>> c;
+				if (!adjlist.TryGetValue(e.Source, out c)) {
+					c = new EdgeList<int, Edge<int>>();
+					adjlist.Add(e.Source, c);
+				}
+				c.Add(e);
+			}
+
+
+			OnProgressTick("Reading graph...", stream.BaseStream.Position, stream.BaseStream.Length);
+			return adjlist;
+		}
+
 
         public virtual IDictionary<int, ICollection<int>> ReadAdjacencyList()
         {
@@ -266,9 +286,11 @@ namespace GraphSerializationFramework
         }
 
         #endregion
-    }
 
-    public class BinaryEdgeListWriter : GraphStreamBase, IGraphWriter
+		
+	}
+
+	public class BinaryEdgeListWriter : IGraphWriter<int, Edge<int>>
     {
         private FileStream baseStream;
         private BinaryWriter stream;
@@ -281,7 +303,7 @@ namespace GraphSerializationFramework
         {
             baseStream = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize);
             stream = new BinaryWriter(baseStream);
-            caps = GraphStreamCaps.AdjecencyStreamable;
+            
         }
 
         ~BinaryEdgeListWriter()

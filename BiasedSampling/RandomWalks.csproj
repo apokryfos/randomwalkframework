@@ -95,7 +95,6 @@
     <Compile Include="Querier\UnweightedQueriers.cs" />
     <Compile Include="Querier\GeneralWeightedQuerier.cs" />
     <Compile Include="Querier\WeightedQuerierBuffers.cs" />
-    <Compile Include="Querier\WeightedQueriers.cs" />
     <Compile Include="RandomWalkInterface\IGraphQuerier.cs" />
     <Compile Include="RandomWalkInterface\IGraphSampler.cs" />
     <Compile Include="RandomWalk\ContinuousTimeRandomWalk.cs" />
@@ -103,7 +102,7 @@
     <Compile Include="RandomWalk\SimpleRandomWalk.cs" />
     <Compile Include="MetropolisRandomWalk.cs" />
     <Compile Include="RandomWalk\GeneralRandomWalk.cs" />
-    <Compile Include="WeightedRandomWalks.cs" />
+    <Compile Include="Weights\WeightedRandomWalks.cs" />
     <Compile Include="RandomWalk\WeightedRandomWalk.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

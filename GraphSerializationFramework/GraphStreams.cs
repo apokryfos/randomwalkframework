@@ -12,10 +12,10 @@ namespace GraphSerializationFramework
 {
 
 
-    
-    public class GraphWriter : GraphStreamBase, IGraphWriter
+
+	public class GraphWriter : IGraphWriter<int, Edge<int>>
     {
-        private IGraphWriter baseWriter;
+		private IGraphWriter<int, Edge<int>> baseWriter;
 
         public GraphWriter(string file) : this(file, 1024)
         {
@@ -95,9 +95,9 @@ namespace GraphSerializationFramework
     }
 
 
-    public class GraphReader : GraphStreamBase, IGraphReader
+	public class GraphReader : IGraphReader<int, Edge<int>>
     {
-        private IGraphReader baseReader;
+		private IGraphReader<int, Edge<int>> baseReader;
 
         public GraphReader(string file, int bufferSize)
         {

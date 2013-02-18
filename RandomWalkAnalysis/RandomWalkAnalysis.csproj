@@ -54,8 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyEstimators\FirstHittingTimeDistribution.cs" />
-    <Compile Include="PropertyEstimators\PropertyEstimationFramework.cs" />
     <Compile Include="RandomWalkCumulativeLogger.cs" />
     <Compile Include="RandomWalkLogger.cs" />
     <Compile Include="RandomWalkLoggers.cs" />

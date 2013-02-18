@@ -7,6 +7,7 @@ using QuickGraph;
 using System.Threading;
 
 namespace RandomWalks.Querier {
+
 	public class UnbufferedWeightedQuerier<TVertex, TEdge> : GeneralWeightedQuerier<TVertex, TEdge>, IWeightedGraphQuerier<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 

@@ -24,6 +24,7 @@ namespace RandomWalks.RandomWalkInterface
         event TransitionEvent<TVertex, TEdge> Step;
         void Initialize();
         TVertex NextSample();
+		
         void Terminate();
         event EventHandler Terminated;
 

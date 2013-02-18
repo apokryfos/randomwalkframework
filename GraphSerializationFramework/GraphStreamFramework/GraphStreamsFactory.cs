@@ -5,6 +5,7 @@ using System.Text;
 
 using System.IO;
 using GraphSerializationFramework.BinaryGraphStreams;
+using QuickGraph;
 
 namespace GraphSerializationFramework.GraphStreamFramework
 {
@@ -29,27 +30,27 @@ namespace GraphSerializationFramework.GraphStreamFramework
     {
 
         #region Reader Per Extention
-        public static IGraphReader GetGraphReaderForExtension(string extension, string filename, int bufferSize)
+        public static IGraphReader<int, Edge<int>>  GetGraphReaderForExtension(string extension, string filename, int bufferSize)
         {
             var kv = ReaderWriterTypes.GetReaderAndWriterType(extension);
             if (kv.Equals(default(KeyValuePair<Type,Type>)))
                 return null;
             if (kv.Key.GetConstructor(new Type[] { typeof(string), typeof(int) }) != null && kv.Key.GetInterface("IGraphReader") != null)
-                return (IGraphReader)Activator.CreateInstance(kv.Key, filename, bufferSize);
+				return (IGraphReader<int, Edge<int>>)Activator.CreateInstance(kv.Key, filename, bufferSize);
 
             return null;
         }
-        public static IGraphReader GetGraphReaderForExtension(string extension, string filename)
+		public static IGraphReader<int, Edge<int>> GetGraphReaderForExtension(string extension, string filename)
         {
             return GetGraphReaderForExtension(extension, filename, (int)Math.Pow(2, 16));
         }
 
-        public static IGraphReader GetGraphReaderForExtension(string filename)
+		public static IGraphReader<int, Edge<int>> GetGraphReaderForExtension(string filename)
         {
             return GetGraphReaderForExtension(filename, (int)Math.Pow(2, 16));
         }
 
-        public static IGraphReader GetGraphReaderForExtension(string filename, int bufferSize)
+		public static IGraphReader<int, Edge<int>> GetGraphReaderForExtension(string filename, int bufferSize)
         {
             return GetGraphReaderForExtension(Path.GetExtension(filename), filename, bufferSize);
 
@@ -66,7 +67,7 @@ namespace GraphSerializationFramework.GraphStreamFramework
 
 
         #region Writer Per Extention
-        public static IGraphWriter GetGraphWriterForExtension(string extension, string filename, int bufferSize)
+		public static IGraphWriter<int, Edge<int>> GetGraphWriterForExtension(string extension, string filename, int bufferSize)
         {
             var kv = ReaderWriterTypes.GetReaderAndWriterType(extension);
             if (kv.Equals(default(KeyValuePair<Type,Type>)))
@@ -76,17 +77,17 @@ namespace GraphSerializationFramework.GraphStreamFramework
             
             return null;
         }
-        public static IGraphWriter GetGraphWriterForExtension(string extension, string filename)
+		public static IGraphWriter<int, Edge<int>> GetGraphWriterForExtension(string extension, string filename)
         {
             return GetGraphWriterForExtension(extension, filename, (int)Math.Pow(2, 11));
         }
 
-        public static IGraphWriter GetGraphWriterForExtension(string filename)
+		public static IGraphWriter<int, Edge<int>> GetGraphWriterForExtension(string filename)
         {
             return GetGraphWriterForExtension(filename, (int)Math.Pow(2, 11));
         }
 
-        public static IGraphWriter GetGraphWriterForExtension(string filename, int bufferSize)
+		public static IGraphWriter<int, Edge<int>> GetGraphWriterForExtension(string filename, int bufferSize)
         {
             return GetGraphWriterForExtension(Path.GetExtension(filename), filename, bufferSize);
 

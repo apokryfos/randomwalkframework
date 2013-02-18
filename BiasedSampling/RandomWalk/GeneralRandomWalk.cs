@@ -19,7 +19,12 @@ namespace RandomWalks {
 	public abstract class GeneralRandomWalk<TVertex, TEdge> : IWeightedRandomWalk<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 
+		/// <summary>
+		/// Gets the value which represents the "time" it takes to make a single step. 
+		/// Defaults to 1 if the walk is discreet.
+		/// </summary>
 		public virtual decimal TimeIncrement { get { return 1.0M; } }
+		
 		protected Random r = RNG.RNGProvider.r;
 		
 
@@ -34,6 +39,7 @@ namespace RandomWalks {
 		public GeneralRandomWalk(TVertex entryPoint, IGraphQuerier<TVertex, TEdge> gq, KeyValuePair<string, string> name) {
 			Querier = gq;
 			this.CurrentState = entryPoint;
+			this.entryPoint = entryPoint;
 			this.Name = name;
 
 		}
@@ -63,7 +69,8 @@ namespace RandomWalks {
 		/// <summary>
 		/// Additional initialization instructions go here
 		/// </summary>
-		public virtual void Initialize() {			
+		public virtual void Initialize() {
+			this.CurrentState = entryPoint;
 			TotalSteps = 0;
 			DiscreetSteps = 0;
 		}
@@ -120,6 +127,8 @@ namespace RandomWalks {
 		}
 
 		public TVertex CurrentState { get; private set; }
+
+		private TVertex entryPoint;
 
 		/// <summary>
 		/// Gets the number of transitions that might be performed from a specific state

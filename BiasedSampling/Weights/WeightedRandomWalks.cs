@@ -46,12 +46,8 @@ namespace RandomWalks.Weights {
 	/// <typeparam name="TEdge">Edge Type</typeparam>
 	/// <typeparam name="TTag">Edge tag type</typeparam>
 	public static class GeneralWeight<TVertex, TEdge, TTag>
-		where TEdge : IEdge<TVertex> 
-		where TEdge : ITagged<TTag> {
-		private int vcount;
-		private decimal c;
-
-		public decimal EdgeWeight(IGraph<TVertex, TEdge> targetGraph, TEdge e) {
+		where TEdge : IEdge<TVertex>, ITagged<TTag> {				
+		public static decimal EdgeWeight(IGraph<TVertex, TEdge> targetGraph, TEdge e) {
 			return Convert.ToDecimal(e.Tag);
 		}
 	}

@@ -95,6 +95,7 @@
     <Compile Include="BinaryGraphStreams\BinaryStream.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GraphStreamFramework\GraphReaderBase.cs" />
     <Compile Include="GraphStreamFramework\GraphStreamsFactory.cs" />
     <Compile Include="GraphStreamFramework\IGraphStream.cs" />
     <Compile Include="GraphStreams.cs" />

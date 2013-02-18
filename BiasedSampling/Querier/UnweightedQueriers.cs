@@ -8,14 +8,18 @@ using System.Reflection;
 
 namespace RandomWalks.Querier
 {
-
+	/// <summary>
+	/// Generalization of a graph querier with specific applicability to unweighted random walks.
+	/// Implements <see cref="IGraphQuerier"/>
+	/// </summary>
+	/// <typeparam name="TVertex">The type of the vertices (states)</typeparam>
+	/// <typeparam name="TEdge">The type of the edges</typeparam>
     public class UnweightedGraphQuerier<TVertex, TEdge> : IGraphQuerier<TVertex, TEdge>        		
         where TEdge : IEdge<TVertex>
     {
         
         protected IGraph<TVertex,TEdge> targetGraph;
 		protected IGraphQuerier<TVertex, TEdge> internalQuerier;
-
 
 		private class UndirectedGraphQuerier : IGraphQuerier<TVertex, TEdge> {
 			private IUndirectedGraph<TVertex, TEdge> targetGraph;
@@ -78,6 +82,11 @@ namespace RandomWalks.Querier
 			#endregion
 		}
 
+
+		/// <summary>
+		/// Initializes the querier on the specified graph and a default name.
+		/// </summary>
+		/// <param name="targetGraph">The QuickGraph.IGraph object to use.</param>
 		public UnweightedGraphQuerier(IGraph<TVertex, TEdge> targetGraph) 
 			: this(targetGraph, new KeyValuePair<string,string>("SRW","Simple Random Walk")) {
 		}

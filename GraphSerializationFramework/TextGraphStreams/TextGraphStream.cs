@@ -10,7 +10,7 @@ using ProgressingUtilities;
 
 namespace GraphSerializationFramework
 {
-    class TextGraphWriter : GraphStreamBase, IGraphWriter
+    class TextGraphWriter : IGraphWriter<int, Edge<int>>
     {
         private StreamWriter stream;
 
@@ -29,12 +29,7 @@ namespace GraphSerializationFramework
             Dispose();
         }
 
-        public override string[] SupportedExtensions
-        {
-            get { return new string[] { ".txt" } ; }
-        }
-
-      
+     
         public override void Dispose()
         {
             if (stream != null)
@@ -94,7 +89,7 @@ namespace GraphSerializationFramework
         #endregion
     }
 
-    class CSVGraphWriter : GraphStreamBase, IGraphWriter
+	class CSVGraphWriter : IGraphWriter<int, Edge<int>>
     {
         private StreamWriter stream;
 
@@ -105,8 +100,7 @@ namespace GraphSerializationFramework
         }
         public CSVGraphWriter(string file, int bufferSize) 
         {
-            stream = new StreamWriter(file, false, Encoding.ASCII, bufferSize);
-            caps = GraphStreamCaps.AdjecencyStreamable;
+            stream = new StreamWriter(file, false, Encoding.ASCII, bufferSize);            
         }
 
         ~CSVGraphWriter()
@@ -185,7 +179,7 @@ namespace GraphSerializationFramework
         #endregion
     }
 
-    class TextGraphReader : GraphStreamBase, IGraphReader
+	class TextGraphReader : IGraphReader<int, Edge<int>>
     {
         private StreamReader stream;
         private int bufferSize;
@@ -202,8 +196,6 @@ namespace GraphSerializationFramework
             stream = new StreamReader(file, Encoding.ASCII, false, bufferSize);
             this.bufferSize = bufferSize;
             srcIsCSV = (Path.GetExtension(file) == ".csv");
-            caps = GraphStreamCaps.AdjecencyStreamable | (srcIsCSV ? GraphStreamCaps.VertexSet : GraphStreamCaps.EdgeStreamable);
- 
         }
 
         ~TextGraphReader()

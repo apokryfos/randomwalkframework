@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using QuickGraph;
-using RandomWalkAnalysis.PropertyEstimators;
 using RandomWalks.RandomWalkInterface;
 
 namespace RandomWalkAnalysis.Samplers {
@@ -13,8 +12,6 @@ namespace RandomWalkAnalysis.Samplers {
 		public virtual IWeightedRandomWalk<TVertex, TEdge> RandomWalk { get; protected set; }
 		protected List<RandomWalkCumulativeLogger<TVertex, TEdge>> loggers = new List<RandomWalkCumulativeLogger<TVertex, TEdge>>();
 		protected List<RandomWalkObserver<TVertex, TEdge>> observers = new List<RandomWalkObserver<TVertex, TEdge>>();
-		protected GraphWeightEstimation<TVertex, TEdge> Estimator { get; set; }
-		protected MostVerticesRehitsDistribution<TVertex, TEdge> FEstimator { get; set; }
 		protected ITerminationConditions<TVertex, TEdge> terminationCondition;
 
 
@@ -61,18 +58,9 @@ namespace RandomWalkAnalysis.Samplers {
 			this.RandomWalk = rw;
 			terminationCondition = c;
 			RandomWalk.Terminated += new EventHandler(RandomWalk_Terminated);
-			Estimator = null;
-			FEstimator = null;
 		}
 
 		protected virtual void RandomWalk_Terminated(object sender, EventArgs e) {
-			if (Estimator != null) {
-				Estimator.WriteEstimates();
-			}
-			if (FEstimator != null) {
-				FEstimator.WriteEstimates();
-			}
-
 			RandomWalk = null;
 			foreach (var l in loggers) {
 				l.Dispose();
