@@ -19,7 +19,7 @@ namespace GraphSerializationFramework {
 		public const int Empty = -3;
 	}
 
-	public class BinaryGraphReader : IGraphReader<int, Edge<int>> {
+	public class BinaryGraphReader : GraphReaderBase<int, Edge<int>>, IGraphReader<int, Edge<int>> {
 		protected FileStream baseStream;
 		protected BinaryReader stream;
 		private string file;
@@ -36,55 +36,14 @@ namespace GraphSerializationFramework {
 		}
 
 		~BinaryGraphReader() {
-			Dispose();
-		}
-
-		protected void ReadAndMergeGraph(IMutableVertexAndEdgeListGraph<int, Edge<int>> g) {
-
-			var adjLst = ReadAdjacencyList();
-			foreach (var kv in adjLst)
-				g.AddVerticesAndEdgeRange(kv.Value.Select<int, Edge<int>>(v => new Edge<int>(kv.Key, v)));
-
-		}
-
-		protected void ReadAndMergeGraph(IMutableUndirectedGraph<int, Edge<int>> g) {
-
-			var adjLst = ReadAdjacencyList();
-			foreach (var kv in adjLst)
-				g.AddVerticesAndEdgeRange(kv.Value.Select<int, Edge<int>>(v => new Edge<int>(kv.Key, v)));
-
+			Dispose(false);
 		}
 
 
 		#region IGraphReader Members
-
-		private IEdgeListAndIncidenceGraph<int, Edge<int>> ReadPartialGraphAsDirected(Type gtype) {
-			var g = (IMutableVertexAndEdgeListGraph<int, Edge<int>>)Activator.CreateInstance(gtype);
-			if (baseStream.Position == 0)
-				OnProgressStarted();
+		
+		public override IVertexEdgeDictionary<int, Edge<int>> ReadAdjecencyList() {
 			if (baseStream.Position == baseStream.Length) {
-				OnProgressDone();
-				return null;
-			}
-
-			IMutableVertexAndEdgeListGraph<int, Edge<int>> g;
-			g = new AdjacencyGraph<int, Edge<int>>();
-			ReadAndMergeGraph(g);
-
-			return g;
-
-		}
-
-		public IVertexEdgeDictionary<int, Edge<int>> ReadAdjecencyList() {
-			throw new NotImplementedException();
-		}
-
-		public virtual IDictionary<int, ICollection<int>> ReadAdjacencyList() {
-
-			if (baseStream.Position == 0)
-				OnProgressStarted();
-			if (baseStream.Position == baseStream.Length) {
-				OnProgressDone();
 				return null;
 			}
 
@@ -94,9 +53,9 @@ namespace GraphSerializationFramework {
 			bool isSource = true;
 			bool outdirection = true;
 			int src = -1, pass = 0;
-			var adjlist = PrefferedDataTypes.GetAdjecencyListInstance();
+			var adjlist = new VertexEdgeDictionary<int, Edge<int>>();
 
-			ICollection<int> current = null;
+			IEdgeList<int, Edge<int>> current = null;
 			do {
 
 				long virtualPos = baseStream.Position;
@@ -108,7 +67,7 @@ namespace GraphSerializationFramework {
 						src = buffer[i];
 						isSource = false;
 						if (!adjlist.TryGetValue(src, out current)) {
-							current = PrefferedDataTypes.GetCollectionInstance();
+							current = new EdgeList<int, Edge<int>>();
 							adjlist.Add(src, current);
 						}
 					} else if (buffer[i] == BinaryGraphFileConstants.Empty)
@@ -124,79 +83,22 @@ namespace GraphSerializationFramework {
 							break;
 						}
 					} else if (outdirection == true)
-						current.Add(buffer[i]);
+						current.Add(new Edge<int>(src, buffer[i]));
 				}
 				pass++;
 			} while (!isSource && baseStream.Position < baseStream.Length);
-
-			OnProgressTick("Reading graph...", baseStream.Position, baseStream.Length);
 			return adjlist;
 		}
 
 
-		public virtual IVertexAndEdgeListGraph<int, Edge<int>> ReadPartialGraph() {
-			if (baseStream.Position == 0)
-				OnProgressStarted();
-			if (baseStream.Position == baseStream.Length) {
-				OnProgressDone();
-				return null;
-			}
 
-			IMutableVertexAndEdgeListGraph<int, Edge<int>> g;
-			g = new AdjacencyGraph<int, Edge<int>>();
-			ReadAndMergeGraph(g);
-
-			return g;
-
-		}
-
-		public virtual IBidirectionalGraph<int, Edge<int>> ReadPartialGraphAsBidirectional() {
-			if (baseStream.Position == 0)
-				OnProgressStarted();
-			if (baseStream.Position == baseStream.Length) {
-				OnProgressDone();
-				return null;
-			}
-
-			IMutableBidirectionalGraph<int, Edge<int>> g;
-			g = new BidirectionalGraph<int, Edge<int>>();
-			ReadAndMergeGraph(g);
-			return g;
-		}
-
-		public virtual void ResetStream() {
+		public override void ResetStream() {
 			baseStream.Seek(0, SeekOrigin.Begin);
 		}
 
 
 
-
-		public virtual IVertexAndEdgeListGraph<int, Edge<int>> ReadEntireGraph() {
-			ResetStream();
-			IMutableVertexAndEdgeListGraph<int, Edge<int>> g = new AdjacencyGraph<int, Edge<int>>();
-			OnProgressStarted();
-			while (baseStream.Position < baseStream.Length) {
-				ReadAndMergeGraph(g);
-				OnProgressTick("Reading graph...", baseStream.Position, baseStream.Length);
-			}
-			OnProgressDone();
-			return g;
-		}
-
-		public virtual IBidirectionalGraph<int, Edge<int>> ReadEntireGraphAsBidirectional() {
-			ResetStream();
-			IMutableBidirectionalGraph<int, Edge<int>> g = new BidirectionalGraph<int, Edge<int>>();
-			OnProgressStarted();
-			while (baseStream.Position < baseStream.Length) {
-				ReadAndMergeGraph(g);
-				OnProgressTick("Reading graph...", baseStream.Position, baseStream.Length);
-			}
-			OnProgressDone();
-			return g;
-		}
-
-
-		public long Position {
+		public override long Position {
 			get {
 				return baseStream.Position;
 			}
@@ -206,11 +108,11 @@ namespace GraphSerializationFramework {
 			}
 		}
 
-		public long Length {
+		public override long Length {
 			get { return baseStream.Length; }
 		}
 
-		public void Calibrate() {
+		public override void Calibrate() {
 			if (Position < Length && Position >= sizeof(int)) {
 				baseStream.Position -= sizeof(int);
 
@@ -220,70 +122,22 @@ namespace GraphSerializationFramework {
 			}
 		}
 
-		public IEnumerable<Edge<int>> StreamAllEdges() {
-			ResetStream();
-			var adj = ReadAdjacencyList();
-			while (adj != null) {
-				foreach (var kv in adj) {
-					foreach (var v in kv.Value)
-						yield return new Edge<int>(kv.Key, v);
-				}
-				adj = ReadAdjacencyList();
-			}
-			yield break;
-		}
-
-
-		public IUndirectedGraph<int, Edge<int>> ReadEntireGraphAsUndirected(bool ape) {
-			ResetStream();
-			IMutableUndirectedGraph<int, Edge<int>> g = new UndirectedGraph<int, Edge<int>>(ape);
-			OnProgressStarted();
-			while (baseStream.Position < baseStream.Length) {
-				ReadAndMergeGraph(g);
-				OnProgressTick("Reading graph...", baseStream.Position, baseStream.Length);
-			}
-			OnProgressDone();
-			return g;
-		}
-
-		public IUndirectedGraph<int, Edge<int>> ReadEntireGraphAsUndirected() {
-			return ReadEntireGraphAsUndirected(true);
-		}
-
-
-		public IUndirectedGraph<int, Edge<int>> ReadPartialGraphAsUndirected() {
-			if (baseStream.Position == 0)
-				OnProgressStarted();
-			if (baseStream.Position == baseStream.Length) {
-				OnProgressDone();
-				return null;
-			}
-			IMutableUndirectedGraph<int, Edge<int>> g = new UndirectedGraph<int, Edge<int>>();
-			ReadAndMergeGraph(g);
-
-			return g;
-		}
-
 		#endregion
 
 		#region IDisposable Members
 
-		public override void Dispose() {
-			if (stream != null) {
-				stream.Close();
-				baseStream.Close();
-				baseStream.Dispose();
-				stream = null;
-			}
-			base.Dispose();
-		}
-
+		protected override void Dispose(bool disposing) {
+			if (!base.disposed) {
+				if (disposing) {
+					stream.Dispose();
+				}
+				base.disposed = true;
+			}		}
 		#endregion
-
 
 	}
 
-	public class BinaryGraphWriter : IGraphWriter<int, Edge<int>> {
+	public class BinaryGraphWriter : GraphWriterBase<int, Edge<int>>, IGraphWriter<int, Edge<int>> {
 		private FileStream baseStream;
 		private BinaryWriter stream;
 
@@ -298,68 +152,21 @@ namespace GraphSerializationFramework {
 
 		~BinaryGraphWriter() {
 
-			Dispose();
+			Dispose(false);
 		}
 
 		#region IGraphWriter Members
 
-		private HashSet<int> hiddenVertices = new HashSet<int>();
-
-		public override string[] SupportedExtensions {
-			get { return new string[] { ".bin" }; }
-		}
-
-		public void WriteNextPart(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
-			foreach (var v in graph.Vertices) {
-				if (graph.OutDegree(v) == 0) {
-					hiddenVertices.Add(v);
-					continue;
-				}
-				if (hiddenVertices.Contains(v))
-					hiddenVertices.Remove(v);
-
-				var bytes = BinaryDataFunctions.MakeOutEdgesList(v, graph.OutDegree(v), graph.OutEdges(v));
-				stream.Write(bytes);
-			}
-		}
-
-		public void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
-			WriteNextPart(graph);
-			WriteIsolatedVertices();
-		}
-
-		protected void WriteIsolatedVertices() {
-			byte[] bytes = new byte[sizeof(int) * (hiddenVertices.Count * 2)];
-			byte[] hvb = new byte[sizeof(int) * 2];
-			Buffer.BlockCopy(BitConverter.GetBytes(BinaryGraphFileConstants.EndOfLine), 0, hvb, sizeof(int), sizeof(int));
-			int i = 0;
-			foreach (var v in hiddenVertices) {
-				Buffer.BlockCopy(BitConverter.GetBytes(v), 0, hvb, 0, sizeof(int));
-				Buffer.BlockCopy(hvb, 0, bytes, i, sizeof(int) * 2);
-				i += 2 * sizeof(int);
-			}
-			stream.Write(bytes);
-		}
-
-
-
-		public void WriteNextPart(IDictionary<int, ICollection<int>> graph) {
+		public override void WriteNextPart(IVertexEdgeDictionary<int, Edge<int>> graph) {
 			foreach (var kv in graph) {
 				var bytes = BinaryDataFunctions.MakeOutEdgesList(kv.Key, kv.Value);
 				stream.Write(bytes);
 			}
 		}
 
-		public void WriteNextPart(IBidirectionalGraph<int, Edge<int>> graph) {
+		public override void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
 			foreach (var v in graph.Vertices) {
-				if (graph.Degree(v) == 0) {
-					hiddenVertices.Add(v);
-					continue;
-				}
-				if (hiddenVertices.Contains(v))
-					hiddenVertices.Remove(v);
-
-				var bytes = BinaryDataFunctions.MakeOutEdgesList(v, graph.OutDegree(v), graph.OutEdges(v));
+				var bytes = BinaryDataFunctions.MakeOutEdgesList(v, graph.OutEdges(v).Select(e => e.GetOtherVertex(v)),graph.OutDegree(v));
 				stream.Write(bytes);
 			}
 		}
@@ -367,37 +174,20 @@ namespace GraphSerializationFramework {
 
 
 
-		public void WriteGraph(IBidirectionalGraph<int, Edge<int>> graph) {
-			WriteNextPart(graph);
-			WriteIsolatedVertices();
-		}
-
-		public void WriteNextEdges(IEdgeSet<int, Edge<int>> edges) {
-			throw new NotSupportedException();
-		}
-
-
-		public void WriteNextEdges(IEnumerable<Edge<int>> edges) {
-			throw new NotSupportedException();
-		}
-
-
 		#endregion
 
-		#region IDisposable Memebers
+		#region IDisposable Members
 
-		public override void Dispose() {
-
-			if (stream != null) {
-				WriteIsolatedVertices();
-				stream.Close();
-				stream = null;
+		protected override void Dispose(bool disposing) {
+			if (!base.disposed) {
+				if (disposing) {
+					stream.Dispose();
+				}
+				base.disposed = true;
 			}
-			base.Dispose();
 		}
-
-
 		#endregion
+
 
 
 	}

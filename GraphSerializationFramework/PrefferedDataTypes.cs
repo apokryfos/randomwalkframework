@@ -7,11 +7,45 @@ using QuickGraph;
 
 namespace GraphSerializationFramework
 {
-	
+
+	public static class PrefferedGenericGraphTypes<TVertex, TEdge>
+		where TEdge : IEdge<TVertex> {
+		public static Type PrefferedGenericGraphType = typeof(BidirectionalGraph<TVertex, TEdge>);
+		public static Type PrefferedGenericUndirectedGraphType = typeof(UndirectedGraph<TVertex, TEdge>);
+
+		public static IMutableVertexAndEdgeListGraph<TVertex, TEdge> GetPrefferedGraphInstance() {
+			return Activator.CreateInstance(PrefferedGenericGraphType) as IMutableVertexAndEdgeListGraph<TVertex, TEdge>;
+
+		}
+		public static IMutableVertexAndEdgeListGraph<TVertex, TEdge> GetPrefferedGraphInstance(bool allowParallelEdges) {
+			return Activator.CreateInstance(PrefferedGenericGraphType, allowParallelEdges) as IMutableVertexAndEdgeListGraph<TVertex, TEdge>;
+
+		}
+		public static IMutableVertexAndEdgeListGraph<TVertex, TEdge> GetPrefferedGraphInstance(bool allowParallelEdges, int vertexCapacity) {
+			return Activator.CreateInstance(PrefferedGenericGraphType, allowParallelEdges, vertexCapacity) as IMutableVertexAndEdgeListGraph<TVertex, TEdge>;
+
+		}
+
+		public static IMutableUndirectedGraph<TVertex, TEdge> GetPrefferedUndirectedGraphInstance() {
+			return Activator.CreateInstance(PrefferedGenericUndirectedGraphType) as IMutableUndirectedGraph<TVertex, TEdge>;
+
+		}
+		public static IMutableUndirectedGraph<TVertex, TEdge> GetPrefferedUndirectedGraphInstance(bool allowParallelEdges) {
+			return Activator.CreateInstance(PrefferedGenericUndirectedGraphType, allowParallelEdges) as IMutableUndirectedGraph<TVertex, TEdge>;
+
+		}
+		public static IMutableUndirectedGraph<TVertex, TEdge> GetPrefferedUndirectedGraphInstance(bool allowParallelEdges, int vertexCapacity) {
+			return Activator.CreateInstance(PrefferedGenericUndirectedGraphType, allowParallelEdges, vertexCapacity) as IMutableUndirectedGraph<TVertex, TEdge>;
+
+		}
+
+	}
+
     public static class PrefferedGenericDataTypes<TKey, TValue>
     {
         public static Type PrefferedDictionaryType = typeof(Dictionary<TKey, TValue>);
         public static Type PrefferedGenericCollectionType = typeof(List<TKey>);
+		
         
         #region Generic Dictionary
         public static IDictionary<TKey, TValue> GetGenericDictionaryInstance()
@@ -113,19 +147,19 @@ namespace GraphSerializationFramework
         
 
         #region Graph
-        public static IMutableBidirectionalGraph<int, Edge<int>> GetPrefferedGraphInstance()
+        public static IMutableVertexAndEdgeListGraph<int, Edge<int>> GetPrefferedGraphInstance()
         {
-            return Activator.CreateInstance(PrefferedGraphType) as IMutableBidirectionalGraph<int, Edge<int>>;
+			return Activator.CreateInstance(PrefferedGraphType) as IMutableVertexAndEdgeListGraph<int, Edge<int>>;
 
         }
-        public static IMutableBidirectionalGraph<int, Edge<int>> GetPrefferedGraphInstance(bool allowParallelEdges)
+		public static IMutableVertexAndEdgeListGraph<int, Edge<int>> GetPrefferedGraphInstance(bool allowParallelEdges)
         {
-            return Activator.CreateInstance(PrefferedGraphType, allowParallelEdges) as IMutableBidirectionalGraph<int, Edge<int>>;
+			return Activator.CreateInstance(PrefferedGraphType, allowParallelEdges) as IMutableVertexAndEdgeListGraph<int, Edge<int>>;
 
         }
-        public static IMutableBidirectionalGraph<int, Edge<int>> GetPrefferedGraphInstance(bool allowParallelEdges, int vertexCapacity)
+		public static IMutableVertexAndEdgeListGraph<int, Edge<int>> GetPrefferedGraphInstance(bool allowParallelEdges, int vertexCapacity)
         {
-            return Activator.CreateInstance(PrefferedGraphType, allowParallelEdges, vertexCapacity) as IMutableBidirectionalGraph<int, Edge<int>>;
+			return Activator.CreateInstance(PrefferedGraphType, allowParallelEdges, vertexCapacity) as IMutableVertexAndEdgeListGraph<int, Edge<int>>;
 
         }
         #endregion

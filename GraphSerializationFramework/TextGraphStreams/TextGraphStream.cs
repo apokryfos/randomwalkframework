@@ -7,397 +7,192 @@ using System.Runtime.InteropServices;
 using QuickGraph;
 using GraphSerializationFramework.GraphStreamFramework;
 using ProgressingUtilities;
+using QuickGraph.Collections;
 
-namespace GraphSerializationFramework
-{
-    class TextGraphWriter : IGraphWriter<int, Edge<int>>
-    {
-        private StreamWriter stream;
+namespace GraphSerializationFramework {
+	class TextGraphWriter : GraphWriterBase<int, Edge<int>>, IGraphWriter<int, Edge<int>> {
+		private StreamWriter stream;
 
-        public TextGraphWriter(string file) 
-            : this(file, (int)Math.Pow(2,11))
-        {
-        }
-        public TextGraphWriter(string file, int bufferSize) 
-        {
-            stream = new StreamWriter(file, false, Encoding.ASCII, bufferSize);
-            caps = GraphStreamCaps.EdgeStreamable;
-        }
+		public TextGraphWriter(string file)
+			: this(file, (int)Math.Pow(2, 11)) {
+		}
+		public TextGraphWriter(string file, int bufferSize) {
+			stream = new StreamWriter(file, false, Encoding.ASCII, bufferSize);			
+		}
 
-        ~TextGraphWriter()
-        {
-            Dispose();
-        }
-
-     
-        public override void Dispose()
-        {
-            if (stream != null)
-            {
-                stream.Close();
-                stream.Dispose();
-                stream = null;
-            }
-            base.Dispose();
-        }
-
-        #region IGraphWriter Members
+		~TextGraphWriter() {
+			Dispose(false);
+		}
 
 
-        public void WriteNextPart(IVertexAndEdgeListGraph<int, Edge<int>> graph)
-        {
-            WriteNextEdges(graph);
-        }
-
-        public void WriteNextPart(IDictionary<int, ICollection<int>> graph)
-        {
-            foreach (var kv in graph)
-            {
-                foreach (var v in kv.Value)
-                    stream.WriteLine(kv.Key.ToString() + " " + v.ToString());
-            }
-        }
-    
-        
-        public void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph)
-        {
-            WriteNextPart(graph);
-        }
+		protected override void Dispose(bool disposing) {
+			if (!base.disposed) {
+				if (disposing) {
+					stream.Dispose();
+				}
+				base.disposed = true;
+			}
+		}
 
 
-        public void WriteGraph(IBidirectionalGraph<int, Edge<int>> graph)
-        {
-            WriteNextPart((IVertexAndEdgeListGraph<int, Edge<int>>)graph);
-        }
+		#region IGraphWriter Members
 
-        public void WriteNextEdges(IEnumerable<Edge<int>> edges)
-        {
-            foreach (var e in edges)
-                stream.WriteLine(e.Source.ToString() + " " + e.Target.ToString());
-        }
+		public override void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
+			foreach (var e in graph.Edges)
+				stream.WriteLine(e.Source.ToString() + " " + e.Target.ToString());
+		}
 
-        public void WriteNextPart(IBidirectionalGraph<int, Edge<int>> graph)
-        {
-            WriteNextPart((IVertexAndEdgeListGraph<int, Edge<int>>)graph);
-        }
+		public override void WriteNextPart(IVertexEdgeDictionary<int, Edge<int>> graph) {
+			foreach (var kv in graph) {
+				foreach (var v in kv.Value)
+					stream.WriteLine(kv.Key.ToString() + " " + v.ToString());
+			}
+		}
 
-        public void WriteNextEdges(IEdgeSet<int, Edge<int>> edges)
-        {
-            WriteNextEdges(edges.Edges);
-        }
+		#endregion
 
-        #endregion
-    }
+		
+	}
 
-	class CSVGraphWriter : IGraphWriter<int, Edge<int>>
-    {
-        private StreamWriter stream;
+	class CSVGraphWriter : GraphWriterBase<int, Edge<int>>, IGraphWriter<int, Edge<int>> {
+		private StreamWriter stream;
 
-        public CSVGraphWriter(string file) 
-            : this(file, (int)Math.Pow(2,11))
-        {
-            
-        }
-        public CSVGraphWriter(string file, int bufferSize) 
-        {
-            stream = new StreamWriter(file, false, Encoding.ASCII, bufferSize);            
-        }
+		public CSVGraphWriter(string file)
+			: this(file, (int)Math.Pow(2, 11)) {
 
-        ~CSVGraphWriter()
-        {
-            Dispose();
-        }
+		}
+		public CSVGraphWriter(string file, int bufferSize) {
+			stream = new StreamWriter(file, false, Encoding.ASCII, bufferSize);
+		}
+
+		~CSVGraphWriter() {
+			Dispose(false);
+		}
 
 
-        public override string[] SupportedExtensions
-        {
-            get { return new string[] { ".csv" }; }
-        }
+		protected override void Dispose(bool disposing) {
+			if (!base.disposed) {
+				if (disposing) {
+					stream.Dispose();
+				}
+				base.disposed = true;
+			}
+		}
 
-        public override void Dispose()
-        {
-            if (stream != null)
-            {
-                stream.Close();
-                stream.Dispose();
-                stream = null;
-            }
-            base.Dispose();
-        }
+		#region IGraphWriter Members
 
-        #region IGraphWriter Members
+		public override void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
+			foreach (var v in graph.Vertices) {
+				stream.Write(v.ToString());
+				foreach (var e in graph.OutEdges(v))
+					stream.Write("," + e.Target.ToString());
+				stream.WriteLine();
+			}
+		}
 
-        public void WriteNextPart(IVertexAndEdgeListGraph<int, Edge<int>> graph)
-        {
-            foreach (var v in graph.Vertices)
-            {
-                stream.Write(v.ToString());
-                foreach (var e in graph.OutEdges(v))
-                    stream.Write("," + e.Target.ToString());
-                stream.WriteLine();
-            }
-        }
-            
-        public void WriteNextPart(IDictionary<int, ICollection<int>> graph)
-        {
-            foreach (var kv in graph)
-            {
-                stream.Write(kv.Key.ToString());
-                foreach (var v in kv.Value)
-                    stream.Write("," + v.ToString());
-                stream.WriteLine();
-            }
-        }
+		public override void WriteNextPart(IVertexEdgeDictionary<int, Edge<int>> graph) {
+			foreach (var kv in graph) {
+				stream.Write(kv.Key.ToString());
+				foreach (var v in kv.Value)
+					stream.Write("," + v.ToString());
+				stream.WriteLine();
+			}
+		}
 
-        public void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph)
-        {
-            WriteNextPart(graph);
-        }
+		#endregion
+	}
+
+	class TextGraphReader : GraphReaderBase<int, Edge<int>>, IGraphReader<int, Edge<int>> {
+		private StreamReader stream;
+		private int bufferSize;
+		private bool srcIsCSV = false;
 
 
-        public void WriteGraph(IBidirectionalGraph<int, Edge<int>> graph)
-        {
-            WriteNextPart((IVertexAndEdgeListGraph<int, Edge<int>>)graph);
-        }
+		public TextGraphReader(string file)
+			: this(file, (int)Math.Pow(2, 11)) {
+
+		}
+		public TextGraphReader(string file, int bufferSize) {
+			stream = new StreamReader(file, Encoding.ASCII, false, bufferSize);
+			this.bufferSize = bufferSize;
+			srcIsCSV = (Path.GetExtension(file) == ".csv");
+		}
+
+		~TextGraphReader() {
+			Dispose(false);
+		}
+
+		protected override void Dispose(bool disposing) {
+			if (!base.disposed) {
+				if (disposing) {
+					stream.Dispose();
+				}
+				base.disposed = true;
+			}
+		}
+
+		#region IGraphReader Members
 
 
-        public void WriteNextPart(IBidirectionalGraph<int, Edge<int>> graph)
-        {
-            WriteNextPart((IVertexAndEdgeListGraph<int, Edge<int>>)graph);
-        }
-        
-        public void WriteNextEdges(IEdgeSet<int, Edge<int>> edges)
-        {
-            throw new NotSupportedException();
-        }
+		public override IVertexEdgeDictionary<int, Edge<int>> ReadAdjecencyList() {
+			if (stream.EndOfStream)
+				return null;
 
-        public void WriteNextEdges(IEnumerable<Edge<int>> edges)
-        {
-            throw new NotSupportedException();
-        }
+			IVertexEdgeDictionary<int, Edge<int>> adjList = new VertexEdgeDictionary<int, Edge<int>>();
+			IEdgeList<int, Edge<int>> current;
+			int count = 0;
+			do {
+				string s = stream.ReadLine();
 
-        #endregion
-    }
+				var parts = s.Split(' ', ',', '\t');
+				int source, target;
+				if (!int.TryParse(parts[0], out source))
+					continue;
 
-	class TextGraphReader : IGraphReader<int, Edge<int>>
-    {
-        private StreamReader stream;
-        private int bufferSize;
-        private bool srcIsCSV = false;
+				if (!adjList.TryGetValue(source, out current)) {
+					current = new EdgeList<int, Edge<int>>();
+					adjList.Add(source, current);
+					count++;
+				}
 
+				for (int i = 1; i < parts.Length; i++) {
+					if (int.TryParse(parts[i], out target)) {
+						current.Add(new Edge<int>(source,target));
+						count++;
+					}
+				}
 
-        public TextGraphReader(string file)
-            : this(file, (int)Math.Pow(2,11))                
-        {
- 
-        }
-        public TextGraphReader(string file, int bufferSize)
-        {   
-            stream = new StreamReader(file, Encoding.ASCII, false, bufferSize);
-            this.bufferSize = bufferSize;
-            srcIsCSV = (Path.GetExtension(file) == ".csv");
-        }
-
-        ~TextGraphReader()
-        {
-            Dispose();
-        }
-
-        public override void Dispose()
-        {
-            if (stream != null)
-            {
-                stream.Close();
-                stream.Dispose();
-                stream = null;
-            }
-            base.Dispose();
-        }
-        
-        #region IGraphReader Members
-
-        public override string[] SupportedExtensions
-        {
-            get { return new string[] { ".txt", ".csv" }; }
-        }
-
-        private void MergeNextPart(IMutableVertexAndEdgeListGraph<int, Edge<int>> g)
-        {
-            var adjLst = ReadAdjacencyList();
-            if (adjLst != null)
-            {
-                foreach (var kv in adjLst)
-                    g.AddVerticesAndEdgeRange(kv.Value.Select<int, Edge<int>>(v => new Edge<int>(kv.Key, v)));
-            }
-        }
+			} while (!stream.EndOfStream && count < bufferSize);
+			return adjList;
+		}
 
 
-        private void MergeNextPart(IMutableUndirectedGraph<int, Edge<int>> g)
-        {
-            var adjLst = ReadAdjacencyList();
-            if (adjLst != null)
-            {
-                foreach (var kv in adjLst)
-                    g.AddVerticesAndEdgeRange(kv.Value.Select<int, Edge<int>>(v => new Edge<int>(kv.Key, v)));
-            }
-        }
+		public override void ResetStream() {
+			stream.BaseStream.Seek(0, SeekOrigin.Begin);
+			stream.DiscardBufferedData();
+		}
 
-        public IDictionary<int, ICollection<int>> ReadAdjacencyList()
-        {
-            if (stream.EndOfStream)
-                return null;
+		public override long Position {
+			get { return stream.BaseStream.Position; }
+			set {
+				stream.BaseStream.Position = Math.Min(value, Length);
+				Calibrate();
+			}
+		}
 
-            var adjList = PrefferedDataTypes.GetAdjecencyListInstance();
-            ICollection<int> current;
-            int count = 0;
-            do
-            {
-                string s = stream.ReadLine();
-
-                var parts = s.Split(' ', ',','\t');
-                int source, target;
-                if (!int.TryParse(parts[0], out source))
-                    continue;
-
-                if (!adjList.TryGetValue(source, out current)) 
-                {
-                    current = PrefferedDataTypes.GetCollectionInstance();
-                    adjList.Add(source, current);
-                    count++;
-                }
-
-                for (int i = 1; i < parts.Length; i++)
-                {
-                    if (int.TryParse(parts[i], out target))
-                    {
-                        current.Add(target);
-                        count++;
-                    }
-                }
-
-            } while (!stream.EndOfStream && count < bufferSize);
-            return adjList;
-        }
-
-        public IVertexAndEdgeListGraph<int, Edge<int>> ReadPartialGraph()
-        {
-            if (stream.EndOfStream)
-                return null;
-
-            AdjacencyGraph<int, Edge<int>> g = new AdjacencyGraph<int, Edge<int>>();
-            MergeNextPart(g);
-            return g;
-        }
-
-        public IBidirectionalGraph<int, Edge<int>> ReadPartialGraphAsBidirectional()
-        {
-            if (stream.EndOfStream)
-                return null;
-
-            BidirectionalGraph<int, Edge<int>> g = new BidirectionalGraph<int, Edge<int>>();
-            MergeNextPart(g);
-            return g;
-        }
-
-        
-
-        public void ResetStream()
-        {
-            stream.BaseStream.Seek(0, SeekOrigin.Begin);
-            stream.DiscardBufferedData();
-        }
-
-        public IVertexAndEdgeListGraph<int, Edge<int>> ReadEntireGraph()
-        {
-            ResetStream();
-            AdjacencyGraph<int, Edge<int>> g = new AdjacencyGraph<int, Edge<int>>();
-            do
-            {
-                MergeNextPart(g);
-            } while (!stream.EndOfStream);
-            return g;
-        }
-
-        public IBidirectionalGraph<int, Edge<int>> ReadEntireGraphAsBidirectional()
-        {
-            ResetStream();
-            BidirectionalGraph<int, Edge<int>> g = new BidirectionalGraph<int, Edge<int>>();
-            do
-            {
-                MergeNextPart(g);
-            } while (!stream.EndOfStream);
-            return g;
-        }
-
-        public long Position
-        {
-            get { return stream.BaseStream.Position; }
-            set 
-            {
-                stream.BaseStream.Position = Math.Min(value,Length); 
-                Calibrate(); 
-            }
-        }
-
-        public long Length
-        {
-            get { return stream.BaseStream.Length; }
-        }
-
-      
-        public void Calibrate()
-        {
-            if (Position < Length) 
-            {
-                Position -= Environment.NewLine.Length;
-                stream.ReadLine();
-            }
-            
-        }
-
-        public IEnumerable<Edge<int>> StreamAllEdges()
-        {
-            ResetStream();
-            var adj = ReadAdjacencyList();
-            while (adj != null)
-            {
-                foreach (var kv in adj)
-                {
-                    foreach (var v in kv.Value)
-                        yield return new Edge<int>(kv.Key, v);
-                }
-                adj = ReadAdjacencyList();
-            }
-            yield break;
-        }
+		public override long Length {
+			get { return stream.BaseStream.Length; }
+		}
 
 
-        public IUndirectedGraph<int, Edge<int>> ReadEntireGraphAsUndirected(bool ape)
-        {
-            ResetStream();
-            UndirectedGraph<int, Edge<int>> g = new UndirectedGraph<int, Edge<int>>(ape);
-            do
-            {
-                MergeNextPart(g);
-            } while (!stream.EndOfStream);
-            return g;
-        }
+		public override void Calibrate() {
+			if (Position < Length) {
+				Position -= Environment.NewLine.Length;
+				stream.ReadLine();
+			}
+		}
+	
 
-        public IUndirectedGraph<int, Edge<int>> ReadEntireGraphAsUndirected()
-        {
-            return ReadEntireGraphAsUndirected(true);
-        }
-
-        public IUndirectedGraph<int, Edge<int>> ReadPartialGraphAsUndirected()
-        {
-            if (stream.EndOfStream)
-                return null;
-
-            UndirectedGraph<int, Edge<int>> g = new UndirectedGraph<int, Edge<int>>();
-            MergeNextPart(g);
-            return g;
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

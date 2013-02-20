@@ -91,14 +91,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryGraphStreams\BinaryDataFunctions.cs" />
-    <Compile Include="BinaryGraphStreams\BinaryEdgeList.cs" />
     <Compile Include="BinaryGraphStreams\BinaryStream.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GraphReaderBase.cs" />
     <Compile Include="GraphStreamFramework\GraphReaderBase.cs" />
     <Compile Include="GraphStreamFramework\GraphStreamsFactory.cs" />
     <Compile Include="GraphStreamFramework\IGraphStream.cs" />
     <Compile Include="GraphStreams.cs" />
+    <Compile Include="GraphWriterBase.cs" />
     <Compile Include="IProgressing.cs" />
     <Compile Include="PrefferedDataTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

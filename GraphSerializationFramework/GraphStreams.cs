@@ -24,10 +24,6 @@ namespace GraphSerializationFramework
         public GraphWriter(string file, int bufferSize)
         {
             baseWriter = GraphWriterFactory.GetGraphWriterForExtension(file, bufferSize);
-            baseWriter.ProgressStart += new EventHandler((o, e) => { OnProgressStarted(); });
-            baseWriter.ProgressTick += new ProgressEventDelegate(OnProgressTick);
-            baseWriter.ProgressFinish += new EventHandler((o, e) => { OnProgressDone(); });
-            baseWriter.StatusText += new EventHandler<ParametrizedEventArgs>((o, peh) => { OnStatusText(peh.Parameter); });
         }
 
         ~GraphWriter()
@@ -35,64 +31,25 @@ namespace GraphSerializationFramework
             Dispose();
         }
 
-        public override string[] SupportedExtensions
+        public void Dispose()
         {
-            get { return baseWriter.SupportedExtensions; }
-        }
-
-        public override void Dispose()
-        {
-            if (baseWriter != null)
-            {
-                baseWriter.Dispose();
-                baseWriter = null;
-            }
+			baseWriter.Dispose();
         }
 
 
 
-        #region IGraphWriter Members
+		#region IGraphWriter<int,Edge<int>> Members
 
+		public void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
+			baseWriter.WriteGraph(graph);
+		}
 
-        public void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph)
-        {
-            baseWriter.WriteGraph(graph);
-        }
+		public void WriteNextPart(QuickGraph.Collections.IVertexEdgeDictionary<int, Edge<int>> graph) {
+			baseWriter.WriteNextPart(graph);
+		}
 
-        public void WriteGraph(IBidirectionalGraph<int, Edge<int>> graph)
-        {
-            baseWriter.WriteGraph(graph);
-        }
-
-        public void WriteNextPart(IVertexAndEdgeListGraph<int, Edge<int>> graph)
-        {
-            baseWriter.WriteNextPart(graph);
-        }
-
-
-        public void WriteNextPart(IDictionary<int, ICollection<int>> graph)
-        {
-            baseWriter.WriteNextPart(graph);
-        }
-      
-
-
-        public void WriteNextPart(IBidirectionalGraph<int, Edge<int>> graph)
-        {
-            baseWriter.WriteNextPart(graph);
-        }
-
-        public void WriteNextEdges(IEdgeSet<int, Edge<int>> edges)
-        {
-            baseWriter.WriteNextEdges(edges);
-        }
-        public void WriteNextEdges(IEnumerable<Edge<int>> edges)
-        {
-            baseWriter.WriteNextEdges(edges);
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 
 
 	public class GraphReader : IGraphReader<int, Edge<int>>
@@ -101,11 +58,7 @@ namespace GraphSerializationFramework
 
         public GraphReader(string file, int bufferSize)
         {
-            baseReader = GraphReaderFactory.GetGraphReaderForExtension(file, bufferSize);
-            baseReader.ProgressStart += new EventHandler((o, e) => { OnProgressStarted(); });
-            baseReader.ProgressTick += new ProgressEventDelegate(OnProgressTick);
-            baseReader.ProgressFinish += new EventHandler((o, e) => { OnProgressDone(); });
-            baseReader.StatusText += new EventHandler<ParametrizedEventArgs>((o, peh) => { OnStatusText(peh.Parameter); });
+            baseReader = GraphReaderFactory.GetGraphReaderForExtension(file, bufferSize);            
         }
 
         public GraphReader(string file)
@@ -114,18 +67,11 @@ namespace GraphSerializationFramework
            
         }
 
-        public override string[] SupportedExtensions
+		~GraphReader() { Dispose(); }
+       
+        public void Dispose()
         {
-            get { return baseReader.SupportedExtensions; }
-        }
-
-        public override void Dispose()
-        {
-            if (baseReader != null)
-            {
-                baseReader.Dispose();
-                baseReader = null;
-            }
+			baseReader.Dispose();
         }
 
         #region IGraphReader Members
@@ -137,32 +83,12 @@ namespace GraphSerializationFramework
         }
 
      
-        public IBidirectionalGraph<int, Edge<int>> ReadEntireGraphAsBidirectional()
-        {
-            return baseReader.ReadEntireGraphAsBidirectional();
-        }    
+        
 
 
         public void ResetStream()
         {
             baseReader.ResetStream();
-        }
-
-        public IVertexAndEdgeListGraph<int, Edge<int>> ReadPartialGraph()
-        {
-            return baseReader.ReadPartialGraph();
-        }
-
-        public IBidirectionalGraph<int, Edge<int>> ReadPartialGraphAsBidirectional()
-        {
-            return baseReader.ReadPartialGraphAsBidirectional();
-        }
-
-
-      
-        public IDictionary<int, ICollection<int>> ReadAdjacencyList()
-        {
-            return baseReader.ReadAdjacencyList();
         }
 
       
@@ -185,30 +111,22 @@ namespace GraphSerializationFramework
             baseReader.Calibrate();
         }
 
-      
-
-        public IEnumerable<Edge<int>> StreamAllEdges()
-        {
-            return baseReader.StreamAllEdges();
-        }
 
         public IUndirectedGraph<int, Edge<int>> ReadEntireGraphAsUndirected()
         {
             return baseReader.ReadEntireGraphAsUndirected();
         }
-
-        public IUndirectedGraph<int, Edge<int>> ReadEntireGraphAsUndirected(bool ape)
-        {
-            return baseReader.ReadEntireGraphAsUndirected(ape);
-        }
-
-
+		     
         public IUndirectedGraph<int, Edge<int>> ReadPartialGraphAsUndirected()
         {
             return baseReader.ReadEntireGraphAsUndirected();
         }
 
-        #endregion
-    }
+		public QuickGraph.Collections.IVertexEdgeDictionary<int, Edge<int>> ReadAdjecencyList() {
+			return baseReader.ReadAdjecencyList();
+		}
+
+		#endregion
+	}
 
 }
