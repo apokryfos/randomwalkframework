@@ -5,9 +5,9 @@ using System.Text;
 using System.IO;
 using QuickGraph;
 using GraphSerializationFramework.GraphStreamFramework;
-using ProgressingUtilities;
 using GraphSerializationFramework.BinaryGraphStreams;
 using QuickGraph.Collections;
+using GraphSerializationFramework.GenericGraphSerializers;
 
 namespace GraphSerializationFramework {
 
@@ -19,7 +19,7 @@ namespace GraphSerializationFramework {
 		public const int Empty = -3;
 	}
 
-	public class BinaryGraphReader : GraphReaderBase<int, Edge<int>>, IGraphReader<int, Edge<int>> {
+	public class BinaryGraphReader : GenericGraphReaderBase<int, Edge<int>>, IGraphReader<int, Edge<int>> {
 		protected FileStream baseStream;
 		protected BinaryReader stream;
 		private string file;
@@ -87,6 +87,7 @@ namespace GraphSerializationFramework {
 				}
 				pass++;
 			} while (!isSource && baseStream.Position < baseStream.Length);
+			OnProgressChanged((int)(((double)Position / (double)Length) * 100.0), "Working");
 			return adjlist;
 		}
 
@@ -137,7 +138,7 @@ namespace GraphSerializationFramework {
 
 	}
 
-	public class BinaryGraphWriter : GraphWriterBase<int, Edge<int>>, IGraphWriter<int, Edge<int>> {
+	public class BinaryGraphWriter : GenericGraphWriterBase<int, Edge<int>>, IGraphWriter<int, Edge<int>> {
 		private FileStream baseStream;
 		private BinaryWriter stream;
 
@@ -158,17 +159,32 @@ namespace GraphSerializationFramework {
 		#region IGraphWriter Members
 
 		public override void WriteNextPart(IVertexEdgeDictionary<int, Edge<int>> graph) {
+			int i = 0;
+			OnProgressChanged(0, "Started");			
 			foreach (var kv in graph) {
 				var bytes = BinaryDataFunctions.MakeOutEdgesList(kv.Key, kv.Value);
 				stream.Write(bytes);
+				i++;
+				if (i % 100 == 0) {
+					OnProgressChanged((int)(((double)i / (double)graph.Count) * 100.0), "Working");
+				}
 			}
+			OnProgressChanged(100, "Finished");
+
 		}
 
 		public override void WriteGraph(IVertexAndEdgeListGraph<int, Edge<int>> graph) {
+			int i = 0;
+			OnProgressChanged(0, "Started");			
 			foreach (var v in graph.Vertices) {
 				var bytes = BinaryDataFunctions.MakeOutEdgesList(v, graph.OutEdges(v).Select(e => e.GetOtherVertex(v)),graph.OutDegree(v));
 				stream.Write(bytes);
+				i++;
+				if (i % 100 == 0) {
+					OnProgressChanged((int)(((double)i / (double)graph.VertexCount) * 100.0), "Working");
+				}
 			}
+			OnProgressChanged(100, "Finished");
 		}
 
 

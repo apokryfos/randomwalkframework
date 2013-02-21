@@ -89,7 +89,6 @@ namespace GraphSerializationFramework.BinaryGraphStreams {
 			return ints;
 		}
 
-
 		#endregion
 	}
 }

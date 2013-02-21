@@ -5,9 +5,10 @@ using System.Text;
 using GraphSerializationFramework.GraphStreamFramework;
 using QuickGraph;
 using QuickGraph.Collections;
+using System.ComponentModel;
 
-namespace GraphSerializationFramework {
-	public abstract class GraphReaderBase<TVertex, TEdge> : IGraphReader<TVertex, TEdge>
+namespace GraphSerializationFramework.GenericGraphSerializers {
+	public abstract class GenericGraphReaderBase<TVertex, TEdge> : IGraphReader<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 
 
@@ -42,10 +43,12 @@ namespace GraphSerializationFramework {
 		protected IMutableVertexAndEdgeSet<TVertex, TEdge> ReadEntireGraph(bool directed) {
 			var g = CreateInstance(directed);
 			IVertexEdgeDictionary<TVertex, TEdge> adj = ReadAdjecencyList();
+			OnProgressChanged(0, "Started");
 			while (adj != null) {
 				Merge(g, adj);
 				adj = ReadAdjecencyList();
 			}
+			OnProgressChanged(100, "Finished");
 			return g;
 
 		}
@@ -73,6 +76,21 @@ namespace GraphSerializationFramework {
 
 		public abstract void Calibrate();
 
+		public event ProgressChangedEventHandler ProgressChanged;
+
+		
+
 		#endregion
+
+
+
+		protected void OnProgressChanged(int percentage, object state) {
+			if (ProgressChanged != null) {
+				ProgressChanged(this, new ProgressChangedEventArgs(percentage, state));
+			}
+		}
+
+
+
 	}
 }
