@@ -7,6 +7,8 @@ using System.Collections;
 using QuickGraph;
 using GraphSerializationFramework.GraphStreamFramework;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
+
 
 
 namespace GraphSerializationFramework.GenericGraphSerializers {
@@ -19,10 +21,10 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 		private IGraphWriter<TVertex, TEdge> baseWriter;
 
 		public GraphWriter(string file)
-			: this(file, 1024) {
+			: this(file, 1024) {			
 
 		}
-		public GraphWriter(string file, int bufferSize) {			
+		public GraphWriter(string file, int bufferSize) {
 			baseWriter = GenericGraphWriterFactory<TVertex,TEdge>.GetGraphWriterForExtension(file, bufferSize);
 		}
 
