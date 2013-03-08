@@ -38,6 +38,8 @@ namespace RandomWalks.Querier
 			this.wf = wf;			
 			this.SyncRoot = new ReaderWriterLockSlim();
 			DegreeThreshold = degreeThreshold;
+			
+			
 		}
 
 
@@ -125,11 +127,11 @@ namespace RandomWalks.Querier
 			try {
 
 				if (!edgeWeightMap.TryGetValue(vertex, out wem)) {
-					if (!lastVertex.Key.Equals(vertex)) {
+					if (!lastVertex.Key.Equals(vertex) || lastVertex.Value == null) {
 						var edgelist = this.AdjecentEdges(vertex).ToList();
 						wem = new WeightedEdgeMapping(this, vertex, edgelist, targetGraph, wf);
 						SyncRoot.EnterWriteLock();
-						if (!edgeWeightMap.ContainsKey(vertex) && edgelist.Count > DegreeThreshold && DegreeThreshold > 0) {
+						if (!edgeWeightMap.ContainsKey(vertex) && edgelist.Count < DegreeThreshold) {
 							edgeWeightMap.Add(vertex, wem);
 						} else {
 							lastVertex = new KeyValuePair<TVertex, WeightedEdgeMapping>(vertex, wem);

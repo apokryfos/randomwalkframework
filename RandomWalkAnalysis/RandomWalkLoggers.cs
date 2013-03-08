@@ -58,9 +58,40 @@ namespace RandomWalkAnalysis
         HITS = 0x4,
         DEGREECOVER = 0x8,
         RANDOMVARIABLE = 0x10,
-        HIDDENPARTITION = 0x20
+        HIDDENPARTITION = 0x20,
+		CYCLICFORMULA = 0x40
     }
 
+
+
+	public class RandomWalkCyclicFormulaStepsLogger<TVertex, TEdge> : RandomWalkProgressiveLogger<TVertex, TEdge> 
+		where TEdge : IEdge<TVertex> {
+
+		Func<TVertex, double>[] values;
+
+		public RandomWalkCyclicFormulaStepsLogger(RandomWalkStepObserver<TVertex, TEdge> obs, string logPath, params Func<TVertex, double>[] functions)
+            : base(obs, logPath)
+        {
+			this.values = functions;
+        }
+
+        protected override void obs_ObservationEvent(RandomWalkObserver<TVertex, TEdge> sampler, TVertex current, TEdge transition, object ObservationParameters)
+        {
+			double[] results = new double[values.Length];
+			for (int i = 0;i < values.Length;i++) {
+				results[i] = values[i](current);
+			}
+			
+            object[] objs = new object[] 
+			{ 
+				sampler.Observed.TotalSteps, 
+				current, sampler.Observed.GetStateWeight(current), 
+				sampler.Observed.GetTransitionWeight(transition), 
+				(ObservationParameters!=null?ObservationParameters.ToString():null) 
+			};			
+            logger.LogLine(objs.Concat(results.Select(d => (object)d)));
+        }
+	}
 
 
     public class RandomWalkHiddenPartitionLogger<TVertex, TEdge> : RandomWalkProgressiveLogger<TVertex, TEdge>

@@ -42,9 +42,8 @@ namespace RandomWalks
         protected override TEdge ChooseNext(TVertex current)
         {
 			decimal rand;
-			lock (RNG.RNGProvider.RandomSyncRoot) {
-				rand = (decimal)r.NextDouble();
-			}
+			rand = (decimal)r.NextDouble();
+			
             return Querier.WeightedAdjacentEdge(current, rand);
             
            

@@ -50,8 +50,51 @@ namespace GraphSerializationFramework {
 
 		#region IGraphWriter<TVertex,TEdge> Members
 
+		public void WriteGraph(IUndirectedGraph<TVertex, TEdge> graph) {
+			AdjacencyGraph<TVertex, TEdge> g = new AdjacencyGraph<TVertex, TEdge>(true,graph.VertexCount);
+			EdgeEquality eeq = new EdgeEquality();
+			g.AddVertexRange(graph.Vertices);
+			HashSet<TEdge> added = new HashSet<TEdge>(eeq);
+			foreach (var e in graph.Edges) {
+				if (added.Add(e)) {
+					g.AddEdge(e);
+				}
+			}
+			WriteGraph(g);
+
+
+		}
 		public abstract void WriteGraph(IVertexAndEdgeListGraph<TVertex, TEdge> graph);
-		public abstract void WriteNextPart(IVertexEdgeDictionary<TVertex, TEdge> graph);		
+		public abstract void WriteNextPart(IVertexEdgeDictionary<TVertex, TEdge> graph);
+
+		private class EdgeEquality : IEqualityComparer<TEdge>	{		
+			private EdgeEqualityComparer<TVertex, TEdge> defaultC = 
+				(
+					(e, s, t) 
+						=> 
+					((e.Source.Equals(s) && e.Target.Equals(t)) || (e.Source.Equals(t) && e.Target.Equals(s)))
+				);
+
+			public EdgeEqualityComparer<TVertex, TEdge> Default {
+				get { return defaultC; }
+				set { defaultC = value; }
+			}
+
+
+
+			#region IEqualityComparer<TEdge> Members
+
+			public bool Equals(TEdge x, TEdge y) {
+				return Default(x, y.Source, y.Target);
+			}
+
+			public int GetHashCode(TEdge obj) {
+				return obj.GetHashCode();
+			}
+
+			#endregion
+		}
+
 
 		#endregion
 	}

@@ -8,8 +8,8 @@ using RandomWalks.RandomWalkInterface;
 
 namespace RandomWalkAnalysis.Samplers
 {
-    public class SamplingThread<TVertex, TEdge> : Sampler<TVertex, TEdge>
-        where TEdge : IEdge<TVertex>
+    public class SamplingThread<TVertex, TEdge> : Sampler<TVertex, TEdge>        
+		where TEdge : IEdge<TVertex>
         
     {
         private ManualResetEvent mre;

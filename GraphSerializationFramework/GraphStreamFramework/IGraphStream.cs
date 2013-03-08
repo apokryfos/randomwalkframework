@@ -10,10 +10,6 @@ using System.ComponentModel;
 
 namespace GraphSerializationFramework.GraphStreamFramework {
 
-	public delegate decimal WeightFunction<TGraph, TVertex, TEdge>(TGraph graph, TEdge edge)
-		where TGraph : IGraph<TVertex, TEdge>
-		where TEdge : IEdge<TVertex>;
-
 	public interface IGraphReader<TVertex, TEdge> : IDisposable
 		where TEdge : IEdge<TVertex> {
 		
@@ -32,7 +28,8 @@ namespace GraphSerializationFramework.GraphStreamFramework {
 		where TEdge : IEdge<TVertex> {
 		
 		event ProgressChangedEventHandler ProgressChanged;
-		void WriteGraph(IVertexAndEdgeListGraph<TVertex, TEdge> graph);		
+		void WriteGraph(IVertexAndEdgeListGraph<TVertex, TEdge> graph);
+		void WriteGraph(IUndirectedGraph<TVertex, TEdge> graph);		
 		void WriteNextPart(IVertexEdgeDictionary<TVertex, TEdge> graph);
 	}
 }

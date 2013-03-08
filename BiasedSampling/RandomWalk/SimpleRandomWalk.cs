@@ -29,9 +29,8 @@ namespace RandomWalks {
 				return default(TEdge);
 			}
 			int adtrans;
-			lock (RNG.RNGProvider.RandomSyncRoot) {
-				adtrans = r.Next(GetAdjacentTransitionCount(current));
-			}
+			adtrans = r.Next(GetAdjacentTransitionCount(current));
+			
 
 			return GetAdjacentTransition(current, adtrans);
 

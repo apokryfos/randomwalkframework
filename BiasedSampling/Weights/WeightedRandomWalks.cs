@@ -22,7 +22,14 @@ namespace RandomWalks.Weights {
 			return (decimal)Math.Pow((targetGraph.AdjacentDegree(e.Source) * targetGraph.AdjacentDegree(e.Target)), beta);
 		}
 	}
-	
+
+	public static class AgeBias {
+		public static decimal EdgeWeight<TEdge>(IUndirectedGraph<int, TEdge> targetGraph, TEdge e, double c)
+		  where TEdge : IEdge<int> {
+			return (decimal)((e.Source + e.Target) * c);
+		}
+	}
+
 	public class HiddenPartitionRandomWalkWeight<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 		private int vcount;
@@ -60,27 +67,21 @@ namespace RandomWalks.Weights {
 	}
 
 	public static class TriangleRandomWalkWeight {
-		public static decimal EdgeWeight<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> targetGraph, TEdge e)
+		public static decimal EdgeWeight<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> targetGraph, TEdge e) 
 			where TEdge : IEdge<TVertex> {
-			if (e.Source.Equals(e.Target))
-				return 1.0M;
-
-			int t = 0;
-			HashSet<TVertex> hs = new HashSet<TVertex>();
-			foreach (var ed in targetGraph.AdjacentEdges(e.Source)) {
-				if (e.Equals(ed) || ed.Source.Equals(ed.Target))
-					continue;
-				hs.Add(ed.GetOtherVertex(e.Source));
-			}
-
-			foreach (var ed in targetGraph.AdjacentEdges(e.Target)) {
-				if (e.Equals(ed) || ed.Source.Equals(ed.Target))
-					continue;
-
-				if (hs.Contains(ed.GetOtherVertex(e.Target)))
-					t++;
-			}
-			return 1.0M + (decimal)t;
+				return TriangleRandomWalkWeight.EdgeWeight<TVertex, TEdge>(targetGraph, e, 1.0);
+		}
+		
+		public static decimal EdgeWeight<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> targetGraph, TEdge e, double c)
+			where TEdge : IEdge<TVertex> {
+			if (e.IsSelfEdge<TVertex,TEdge>())
+				return 1.0M;			
+			HashSet<TVertex> l = new HashSet<TVertex>(targetGraph.AdjacentEdges(e.Source).Select(ed=>ed.GetOtherVertex(e.Source)));
+			l.Remove(e.Target);
+			l.IntersectWith(targetGraph.AdjacentEdges(e.Target).Select(ed => ed.GetOtherVertex(e.Target)));
+			
+			
+			return 1.0M + (decimal)c*(decimal)l.Count;
 		}
 
 	}

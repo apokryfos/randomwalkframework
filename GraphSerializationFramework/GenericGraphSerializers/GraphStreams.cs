@@ -35,8 +35,7 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 		public void Dispose() {
 			baseWriter.Dispose();
 		}
-
-
+		
 
 		#region IGraphWriter<int,Edge<int>> Members
 
@@ -52,9 +51,25 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 			add { baseWriter.ProgressChanged += value; }
 			remove { baseWriter.ProgressChanged -= value; }
 		}
+			
+		public void WriteGraph(IUndirectedGraph<TVertex, TEdge> graph) {
+			baseWriter.WriteGraph(graph);
+		}
 
 		#endregion
 
+
+		public static void WriteGraph(IVertexAndEdgeListGraph<TVertex, TEdge> graph, string filename) {			
+			using (GraphWriter<TVertex, TEdge> gw = new GraphWriter<TVertex, TEdge>(filename)) {
+				gw.WriteGraph(graph);
+			}
+		}
+
+		public static void WriteGraph(IUndirectedGraph<TVertex, TEdge> graph, string filename) {			
+			using (GraphWriter<TVertex, TEdge> gw = new GraphWriter<TVertex, TEdge>(filename)) {
+				gw.WriteGraph(graph);
+			}
+		}
 	}
 
 
@@ -117,6 +132,23 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 		}
 
 		#endregion
+
+		public static IVertexAndEdgeListGraph<TVertex, TEdge> ReadGraph(string filename) {
+			IVertexAndEdgeListGraph<TVertex, TEdge> g;
+			using (GraphReader<TVertex, TEdge> gr = new GraphReader<TVertex, TEdge>(filename)) {
+				g = gr.ReadEntireGraph();
+			}
+			return g;
+		}
+
+		public static IUndirectedGraph<TVertex, TEdge> ReadUndirectedGraph(string filename) {
+			IUndirectedGraph<TVertex, TEdge> g;
+			using (GraphReader<TVertex, TEdge> gr = new GraphReader<TVertex, TEdge>(filename)) {
+				g = gr.ReadEntireGraphAsUndirected();
+			}
+			return g;
+		}
+
 	}
 
 }

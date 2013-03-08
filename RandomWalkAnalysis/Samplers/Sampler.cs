@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using QuickGraph;
 using RandomWalks.RandomWalkInterface;
+using RandomWalks.Weights;
 
 namespace RandomWalkAnalysis.Samplers {
-	public class Sampler<TVertex, TEdge>
+	public class Sampler<TVertex, TEdge>		
 		where TEdge : IEdge<TVertex> {
 
 		public const int vcount = 500;
@@ -19,7 +20,7 @@ namespace RandomWalkAnalysis.Samplers {
 		public virtual void AttachLoggers(LoggerType l, IUndirectedGraph<TVertex, TEdge> graph, string logPath) {
 			string NameBase = logPath + "\\" + RandomWalk.Name.Key + "-";
 
-			if ((l & (LoggerType.STEP | LoggerType.HITS | LoggerType.RANDOMVARIABLE | LoggerType.HIDDENPARTITION)) != 0) {
+			if ((l & (LoggerType.STEP | LoggerType.HITS | LoggerType.RANDOMVARIABLE | LoggerType.HIDDENPARTITION | LoggerType.CYCLICFORMULA)) != 0) {
 				var rwSO = new RandomWalkStepObserver<TVertex, TEdge>(RandomWalk);
 				observers.Add(rwSO);
 
@@ -36,6 +37,10 @@ namespace RandomWalkAnalysis.Samplers {
 				}
 				if (l.HasFlag(LoggerType.HIDDENPARTITION) && typeof(TVertex) == typeof(int))
 					loggers.Add(new RandomWalkHiddenPartitionLogger<TVertex, TEdge>(rwSO, NameBase + "HP.csv", (v => Convert.ToInt32(v) <= vcount)));
+
+				if (l.HasFlag(LoggerType.CYCLICFORMULA) && typeof(TVertex) == typeof(int))
+					loggers.Add(new RandomWalkCyclicFormulaStepsLogger<TVertex, TEdge>(rwSO, NameBase + "CFRP.csv", CFRPFunctions<TVertex, TEdge>.GetFunctions(graph)));
+
 
 			}
 
