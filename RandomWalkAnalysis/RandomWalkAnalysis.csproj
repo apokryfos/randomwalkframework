@@ -68,13 +68,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ARGSampling\RNG\RNG.csproj">
-      <Project>{54BC7FD2-0430-4EED-930A-51BF89AD41AC}</Project>
-      <Name>RNG</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BiasedSampling\RandomWalks.csproj">
       <Project>{6F9ACEDD-7101-482E-9A33-4579680BB782}</Project>
       <Name>RandomWalks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RNG\RNG.csproj">
+      <Project>{54BC7FD2-0430-4EED-930A-51BF89AD41AC}</Project>
+      <Name>RNG</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
