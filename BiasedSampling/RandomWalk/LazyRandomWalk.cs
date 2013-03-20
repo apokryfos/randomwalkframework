@@ -7,10 +7,10 @@ using QuickGraph;
 using RandomWalks.Querier;
 
 namespace RandomWalks.RandomWalk {
-	public abstract class LazySimpleRandomWalk<TVertex, TEdge> : SimpleRandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public abstract class LazySimpleRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
 	  where TEdge : IEdge<TVertex> {
 		public LazySimpleRandomWalk(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> name)
-			: base(entryPoint, targetGraph) {
+			: base(entryPoint, targetGraph, name) {
 			Name = new KeyValuePair<string, string>("LSRW", "Lazy Simple Random Walk");
 		}
 
@@ -37,11 +37,11 @@ namespace RandomWalks.RandomWalk {
 			return base.GetTransitionWeight(transition) * 0.5M;
 		}
 	}
-	public abstract class LazyWeightedRandomWalk<TVertex, TEdge> : WeightedRandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public abstract class LazyWeightedRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
 	  where TEdge : IEdge<TVertex> {
 		public LazyWeightedRandomWalk(TVertex entryPoint, WeightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> name)
-			: base(entryPoint, targetGraph) {
-			Name = new KeyValuePair<string, string>("L" + targetGraph.PolicyName.Key, "Lazy " + targetGraph.PolicyName.Value);
+			: base(entryPoint, targetGraph, new KeyValuePair<string, string>("L" + targetGraph.PolicyName.Key, "Lazy " + targetGraph.PolicyName.Value)) {
+			
 
 		}
 		protected override TEdge ChooseNext(TVertex current) {

@@ -16,7 +16,7 @@ namespace RandomWalks {
 	/// <typeparam name="TVertex">Type of vertices (states) encountered</typeparam>
 	/// <typeparam name="TEdge">Type of edges(transitions) encountered</typeparam>
 
-	public abstract class GeneralRandomWalk<TVertex, TEdge> : IWeightedRandomWalk<TVertex, TEdge>
+	public class RandomWalk<TVertex, TEdge> : IWeightedRandomWalk<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 
 		/// <summary>
@@ -36,7 +36,7 @@ namespace RandomWalks {
 		/// <param name="entryPoint">Initial state</param>
 		/// <param name="gq">Querier on the graph</param>
 		/// <param name="name">The name of the walk. Key is the short name and value the long name</param>
-		public GeneralRandomWalk(TVertex entryPoint, IGraphQuerier<TVertex, TEdge> gq, KeyValuePair<string, string> name) {
+		public RandomWalk(TVertex entryPoint, IGraphQuerier<TVertex, TEdge> gq, KeyValuePair<string, string> name) {
 			Querier = gq;
 			this.CurrentState = entryPoint;
 			this.entryPoint = entryPoint;
@@ -81,7 +81,14 @@ namespace RandomWalks {
 		/// </summary>
 		/// <param name="current">The current state of the walk. Provided to allow flexibility.</param>
 		/// <returns>Should return the next transition or default(TEdge) to wait</returns>
-		protected abstract TEdge ChooseNext(TVertex current);
+		protected virtual TEdge ChooseNext(TVertex current) {
+			int ind = Querier.RandomAdjecentEdgeIndex(current);
+			if (ind >= 0) {
+				return Querier.AdjecentEdge(current, ind);
+			} else {
+				return default(TEdge);
+			}
+		}
 
 
 		/// <summary>
@@ -148,9 +155,13 @@ namespace RandomWalks {
 			return Querier.AdjecentEdge(state, index);
 		}
 
-		public abstract decimal GetStateWeight(TVertex state);
+		public virtual decimal GetStateWeight(TVertex state) {
+			return Querier.VertexWeight(state);
+		}
 
-		public abstract decimal GetTransitionWeight(TEdge transition);
+		public virtual decimal GetTransitionWeight(TEdge transition) {
+			return Querier.EdgeWeight(transition);
+		}
 
 		#endregion
 	}

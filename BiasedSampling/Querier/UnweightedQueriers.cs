@@ -17,7 +17,8 @@ namespace RandomWalks.Querier
     public class UnweightedGraphQuerier<TVertex, TEdge> : IGraphQuerier<TVertex, TEdge>        		
         where TEdge : IEdge<TVertex>
     {
-        
+
+		protected Random r = RNG.RNGProvider.r;
         protected IGraph<TVertex,TEdge> targetGraph;
 		protected IGraphQuerier<TVertex, TEdge> internalQuerier;
 
@@ -37,6 +38,15 @@ namespace RandomWalks.Querier
 
 			#region IDisposable Members
 			public void Dispose() { }
+			
+			public TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) { return default(TEdge); }
+
+			public decimal EdgeWeight(TEdge edge) { return 0.0M; }
+
+			public decimal VertexWeight(TVertex vertex) { return 0.0M; }
+
+			public int RandomAdjecentEdgeIndex(TVertex vertex) { return 0; }
+
 			#endregion
 		}
 		private class DirectedGraphQuerier : IGraphQuerier<TVertex, TEdge> {			
@@ -50,6 +60,15 @@ namespace RandomWalks.Querier
 			public int AdjecentDegree(TVertex vertex) { TotalQueries++; return targetGraph.OutDegree(vertex); }
 			public TEdge AdjecentEdge(TVertex vertex, int index) { TotalQueries++; return targetGraph.OutEdge(vertex, index); }
 			public KeyValuePair<string, string> PolicyName { get; set; }
+
+			public TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) { return default(TEdge); }
+
+			public decimal EdgeWeight(TEdge edge) { return 0.0M; }
+
+			public decimal VertexWeight(TVertex vertex) { return 0.0M; }
+
+			public int RandomAdjecentEdgeIndex(TVertex vertex) { return 0; }
+
 			#endregion
 
 			#region IDisposable Members
@@ -75,6 +94,15 @@ namespace RandomWalks.Querier
 				}				
 			}
 			public KeyValuePair<string, string> PolicyName { get; set; }
+
+			public TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) { return default(TEdge); }
+
+			public decimal EdgeWeight(TEdge edge) { return 0.0M; }
+
+			public decimal VertexWeight(TVertex vertex) { return 0.0M; }
+
+			public int RandomAdjecentEdgeIndex(TVertex vertex) { return 0; }
+
 			#endregion
 
 			#region IDisposable Members
@@ -137,6 +165,23 @@ namespace RandomWalks.Querier
 		public KeyValuePair<string, string> PolicyName {
 			get;
 			protected set;
+		}
+			
+
+		public virtual TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) {
+			return AdjecentEdge(vertex, (int)(AdjecentDegree(vertex)*weightedIndex));
+		}
+
+		public virtual decimal EdgeWeight(TEdge edge) {
+			return 1.0M;
+		}
+
+		public virtual decimal VertexWeight(TVertex vertex) {
+			return AdjecentDegree(vertex);
+		}
+
+		public virtual int RandomAdjecentEdgeIndex(TVertex vertex) {
+			return r.Next(AdjecentDegree(vertex));
 		}
 
 		#endregion

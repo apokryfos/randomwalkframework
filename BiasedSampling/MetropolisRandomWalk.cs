@@ -9,15 +9,13 @@ using RandomWalks.Querier;
 
 namespace RandomWalks
 {
-  
-    public class MetropolisRandomWalk<TVertex, TEdge> : SimpleRandomWalk<TVertex,TEdge>  ,IWeightedRandomWalk<TVertex, TEdge>
+
+	public class MetropolisRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         public MetropolisRandomWalk(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph)
-            : base(entryPoint, targetGraph)
-        {
-            Name = new KeyValuePair<string, string>("MHRW", "Metropolis Hastings Random Walk");
-        }
+            : base(entryPoint, targetGraph, new KeyValuePair<string, string>("MHRW", "Metropolis Hastings Random Walk"))
+        { }
 
         protected override TEdge ChooseNext(TVertex current)
         {

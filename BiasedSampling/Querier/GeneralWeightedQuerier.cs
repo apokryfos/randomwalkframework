@@ -16,7 +16,7 @@ namespace RandomWalks.Querier
 	/// </summary>
 	/// <typeparam name="TVertex">Vertex(state) type</typeparam>
 	/// <typeparam name="TEdge">Edge(transition) type</typeparam>
-    public class GeneralWeightedQuerier<TVertex, TEdge> : UnweightedGraphQuerier<TVertex, TEdge>, IWeightedGraphQuerier<TVertex, TEdge>
+    public class GeneralWeightedQuerier<TVertex, TEdge> : UnweightedGraphQuerier<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
 
@@ -99,7 +99,7 @@ namespace RandomWalks.Querier
 	
 		#region IWeightedGraphQuerier<IUndirectedGraph<TVertex,TEdge>,TVertex,TEdge,decimal> Members
 
-		public virtual TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) {
+		public override TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) {
 
 			var index = VertexMapping(vertex).GetMapping(weightedIndex);
 			if (index >= 0)
@@ -108,12 +108,12 @@ namespace RandomWalks.Querier
 				return default(TEdge);
 		}
 
-		public virtual bool TryGetEdgeWeight(TEdge edge, out decimal weight) {
+		public bool TryGetEdgeWeight(TEdge edge, out decimal weight) {
 			weight = wf(targetGraph, edge);
 			return false;
 		}
 
-		public virtual decimal EdgeWeight(TEdge edge) {
+		public override decimal EdgeWeight(TEdge edge) {
 			WeightedEdgeMapping wem;
 			wem = VertexMapping(edge.Source);
 			return wem.GetWeight(edge);
@@ -150,7 +150,7 @@ namespace RandomWalks.Querier
 
 		
 
-		public virtual decimal VertexWeight(TVertex vertex) {
+		public override decimal VertexWeight(TVertex vertex) {
 			return VertexMapping(vertex).VertexWeight;
 		}
 

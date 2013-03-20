@@ -99,12 +99,10 @@
     <Compile Include="RandomWalkInterface\IGraphSampler.cs" />
     <Compile Include="RandomWalk\ContinuousTimeRandomWalk.cs" />
     <Compile Include="RandomWalk\LazyRandomWalk.cs" />
-    <Compile Include="RandomWalk\SimpleRandomWalk.cs" />
     <Compile Include="MetropolisRandomWalk.cs" />
     <Compile Include="RandomWalk\GeneralRandomWalk.cs" />
     <Compile Include="Weights\CFRPFunctions.cs" />
     <Compile Include="Weights\WeightedRandomWalks.cs" />
-    <Compile Include="RandomWalk\WeightedRandomWalk.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -37,15 +37,6 @@ namespace RandomWalks.RandomWalkInterface {
 		/// Should have the policy name. The key should be the short abbreviation of the name and the value should be the long name
 		/// </summary>
 		KeyValuePair<string, string> PolicyName { get; }
-	}
-
-	/// <summary>
-	/// Weighted querier interface extension.
-	/// </summary>
-	/// <typeparam name="TVertex">Type of vertices (states)</typeparam>
-	/// <typeparam name="TEdge">Type of edges (transitions)</typeparam>
-	public interface IWeightedGraphQuerier<TVertex, TEdge> : IGraphQuerier<TVertex, TEdge>
-		where TEdge : IEdge<TVertex> {
 
 		/// <summary>
 		/// Assuming the transitions are ordered (irrespective of their weight)
@@ -84,5 +75,16 @@ namespace RandomWalks.RandomWalkInterface {
 		/// <param name="edge">The state to be queried</param>
 		/// <returns>The weight of the state</returns>
 		decimal VertexWeight(TVertex vertex);
+
+		/// <summary>
+		/// Given a vertex returns a random adjecent edge index based on the selection policy (i.e. weighted or unweighted)
+		/// </summary>
+		/// <param name="vertex"></param>
+		/// <returns></returns>
+		int RandomAdjecentEdgeIndex(TVertex vertex);
+
+
 	}
+
+	
 }
