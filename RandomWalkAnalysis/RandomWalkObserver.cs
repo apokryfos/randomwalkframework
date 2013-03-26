@@ -14,9 +14,9 @@ namespace RandomWalkAnalysis
         where TEdge : IEdge<TVertex>
         
     {
-        public IWeightedRandomWalk<TVertex, TEdge> Observed { get; set; }
+        public IRandomWalk<TVertex, TEdge> Observed { get; set; }
 
-        public RandomWalkObserver(IWeightedRandomWalk<TVertex, TEdge> observedSampler)
+        public RandomWalkObserver(IRandomWalk<TVertex, TEdge> observedSampler)
         {
             Observed = observedSampler;
             Observed.Step += new TransitionEvent<TVertex, TEdge>(Observed_Transition);
@@ -28,7 +28,7 @@ namespace RandomWalkAnalysis
             Dispose();
         }
 
-        protected abstract void Observed_Transition(IWeightedRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight);
+        protected abstract void Observed_Transition(IRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight);
 
         public event ObserverEvent<TVertex, TEdge> ObservationEvent;
 

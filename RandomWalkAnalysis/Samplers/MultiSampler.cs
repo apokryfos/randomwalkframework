@@ -20,7 +20,7 @@ namespace RandomWalkAnalysis.Samplers
 
         private List<KeyValuePair<Type, IGraphQuerier<TVertex, TEdge>>> Types;
         private int LoopCount { set; get; }
-        private Func<IWeightedRandomWalk<TVertex, TEdge>, int, ITerminationConditions<TVertex, TEdge>> CondGen;
+        private Func<IRandomWalk<TVertex, TEdge>, int, ITerminationConditions<TVertex, TEdge>> CondGen;
         private IUndirectedGraph<TVertex, TEdge> GraphRef { set; get; }
         private List<SamplingThread<TVertex, TEdge>> Samplers { get; set; }                
         private string LogPathBase { get; set; }
@@ -33,7 +33,7 @@ namespace RandomWalkAnalysis.Samplers
 
         public MultiSamplers(
             List<KeyValuePair<Type, IGraphQuerier<TVertex, TEdge>>> d,
-            Func<IWeightedRandomWalk<TVertex, TEdge>, int, ITerminationConditions<TVertex, TEdge>> condGen,
+            Func<IRandomWalk<TVertex, TEdge>, int, ITerminationConditions<TVertex, TEdge>> condGen,
             List<int> entryPoints, 
             string filePath,
             int loops,             
@@ -96,7 +96,7 @@ namespace RandomWalkAnalysis.Samplers
         {
                             
 
-            IWeightedRandomWalk<TVertex, TEdge> w = (IWeightedRandomWalk<TVertex, TEdge>)Activator.CreateInstance(samplerType.Key, EntryPoints[r.Next(EntryPoints.Count)], samplerType.Value);
+            IRandomWalk<TVertex, TEdge> w = (IRandomWalk<TVertex, TEdge>)Activator.CreateInstance(samplerType.Key, EntryPoints[r.Next(EntryPoints.Count)], samplerType.Value);
             w.Initialize();
 
             var Sampler = new SamplingThread<TVertex, TEdge>(w, CondGen(w, loop));

@@ -10,7 +10,7 @@ using RandomWalks.Querier;
 namespace RandomWalks
 {
 
-	public class MetropolisRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public class MetropolisRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IRandomWalk<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         public MetropolisRandomWalk(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph)

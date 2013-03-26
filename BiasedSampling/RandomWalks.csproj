@@ -96,7 +96,7 @@
     <Compile Include="Querier\GeneralWeightedQuerier.cs" />
     <Compile Include="Querier\WeightedQuerierBuffers.cs" />
     <Compile Include="RandomWalkInterface\IGraphQuerier.cs" />
-    <Compile Include="RandomWalkInterface\IGraphSampler.cs" />
+    <Compile Include="RandomWalkInterface\IRandomWalk.cs" />
     <Compile Include="RandomWalk\ContinuousTimeRandomWalk.cs" />
     <Compile Include="RandomWalk\LazyRandomWalk.cs" />
     <Compile Include="MetropolisRandomWalk.cs" />

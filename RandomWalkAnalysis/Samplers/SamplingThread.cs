@@ -15,7 +15,7 @@ namespace RandomWalkAnalysis.Samplers
         private ManualResetEvent mre;
         private object syncRoot = new object();
 
-        public override IWeightedRandomWalk<TVertex, TEdge> RandomWalk
+        public override IRandomWalk<TVertex, TEdge> RandomWalk
         {
             get
             {
@@ -30,7 +30,7 @@ namespace RandomWalkAnalysis.Samplers
             }
         }
 
-        public SamplingThread(IWeightedRandomWalk<TVertex, TEdge> rw, ITerminationConditions<TVertex, TEdge> c)
+        public SamplingThread(IRandomWalk<TVertex, TEdge> rw, ITerminationConditions<TVertex, TEdge> c)
             : base(rw, c)
         {
             this.mre = new ManualResetEvent(false);

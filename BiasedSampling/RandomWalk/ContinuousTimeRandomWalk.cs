@@ -9,7 +9,7 @@ using RandomWalks.Querier;
 namespace RandomWalks.RandomWalk {
 
 
-	public class RandomWalkWithDistributionalIncrements<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public class RandomWalkWithDistributionalIncrements<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IRandomWalk<TVertex, TEdge>
 	where TEdge : IEdge<TVertex> {
 
 		public RandomWalkWithDistributionalIncrements(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> dummy)
@@ -27,7 +27,7 @@ namespace RandomWalks.RandomWalk {
 			}
 		}
 	}
-	public class ContinuousTimeSimpleRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public class ContinuousTimeSimpleRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IRandomWalk<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 
 		public ContinuousTimeSimpleRandomWalk(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> dummy)
@@ -46,7 +46,7 @@ namespace RandomWalks.RandomWalk {
 		}
 	}
 
-	public class ContinuousTimeRandomWalkWithNegativeExponentialTimeIncrements<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public class ContinuousTimeRandomWalkWithNegativeExponentialTimeIncrements<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IRandomWalk<TVertex, TEdge>
 	   where TEdge : IEdge<TVertex> {
 
 		public ContinuousTimeRandomWalkWithNegativeExponentialTimeIncrements(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> dummy)

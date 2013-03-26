@@ -8,12 +8,12 @@ using System.IO;
 namespace RandomWalks.RandomWalkInterface
 {
 
-    public delegate void TransitionEvent<TState, TTransition>(IWeightedRandomWalk<TState, TTransition> sampler, TState previous, TState current, TTransition transition, decimal weight)
+    public delegate void TransitionEvent<TState, TTransition>(IRandomWalk<TState, TTransition> sampler, TState previous, TState current, TTransition transition, decimal weight)
                 where TTransition : IEdge<TState>;
                 
 
 
-    public interface IWeightedRandomWalk<TVertex, TEdge> 
+    public interface IRandomWalk<TVertex, TEdge> 
         where TEdge : IEdge<TVertex>
         
       
@@ -31,6 +31,8 @@ namespace RandomWalks.RandomWalkInterface
         decimal TotalSteps { get; }
         ulong DiscreetSteps { get; }
         TVertex CurrentState { get; }
+		TVertex PreviousState { get; }
+		TVertex InitialState { get; }
 
         int GetAdjacentTransitionCount(TVertex state);
         TEdge GetAdjacentTransition(TVertex state, int index);

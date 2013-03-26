@@ -19,11 +19,11 @@ namespace RandomWalkAnalysis.Samplers
     public class CoverageTerminationCondition<TVertex, TEdge> : ITerminationConditions<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        protected IWeightedRandomWalk<TVertex, TEdge> Walk { get; set; }
+        protected IRandomWalk<TVertex, TEdge> Walk { get; set; }
         private decimal CoverTarget { get; set; }
         RandomWalkCoverageObserver<TVertex, TEdge> CoverageObserver { get; set; }
 
-        public CoverageTerminationCondition(IWeightedRandomWalk<TVertex, TEdge> rw, int totalVertices ,decimal coverPC)
+        public CoverageTerminationCondition(IRandomWalk<TVertex, TEdge> rw, int totalVertices ,decimal coverPC)
         {
             Walk = rw;
             CoverageObserver = new RandomWalkCoverageObserver<TVertex, TEdge>(rw, totalVertices);
@@ -35,7 +35,7 @@ namespace RandomWalkAnalysis.Samplers
             return CoverageObserver.Coverage >= CoverTarget;
         }
 
-        public static CoverageTerminationCondition<TVertex, TEdge> CoveragePCCondition(IWeightedRandomWalk<TVertex, TEdge> rw, int vertexCount, int loopCount, decimal coverage, int i)
+        public static CoverageTerminationCondition<TVertex, TEdge> CoveragePCCondition(IRandomWalk<TVertex, TEdge> rw, int vertexCount, int loopCount, decimal coverage, int i)
         {
             var r = new CoverageTerminationCondition<TVertex, TEdge>(rw, vertexCount, coverage);
             return r;
@@ -49,10 +49,10 @@ namespace RandomWalkAnalysis.Samplers
         where TEdge : IEdge<TVertex>
         
     {
-        protected IWeightedRandomWalk<TVertex, TEdge> Walk { get; set; }
+        protected IRandomWalk<TVertex, TEdge> Walk { get; set; }
         protected decimal StepTarget { get; set; }
 
-        public StepsTerminationCondition(IWeightedRandomWalk<TVertex, TEdge> rw, decimal steps)
+        public StepsTerminationCondition(IRandomWalk<TVertex, TEdge> rw, decimal steps)
         {
             Walk = rw;
             StepTarget = steps;
@@ -63,13 +63,13 @@ namespace RandomWalkAnalysis.Samplers
             return Walk.DiscreetSteps >= StepTarget;
         }
 
-        public static StepsTerminationCondition<TVertex, TEdge> IncrementalStepsConditions(IWeightedRandomWalk<TVertex, TEdge> rw, int loopCount, decimal maxTarget, int i)
+        public static StepsTerminationCondition<TVertex, TEdge> IncrementalStepsConditions(IRandomWalk<TVertex, TEdge> rw, int loopCount, decimal maxTarget, int i)
         {
             var r = new StepsTerminationCondition<TVertex, TEdge>(rw, (decimal)(((decimal)(i + 1) / (decimal)loopCount) * (decimal)maxTarget));
             return r;
         }
 
-        public static StepsTerminationCondition<TVertex, TEdge> SublinearStepsCondition(IWeightedRandomWalk<TVertex, TEdge> rw, int vertexCount, int loopCount, decimal minExponent, decimal maxTargetExponent, int i)
+        public static StepsTerminationCondition<TVertex, TEdge> SublinearStepsCondition(IRandomWalk<TVertex, TEdge> rw, int vertexCount, int loopCount, decimal minExponent, decimal maxTargetExponent, int i)
         {
             decimal step = (maxTargetExponent - minExponent) / (decimal)loopCount;
 
@@ -83,7 +83,7 @@ namespace RandomWalkAnalysis.Samplers
     public class TimeTerminationCondition<TVertex, TEdge> : StepsTerminationCondition<TVertex, TEdge>
           where TEdge : IEdge<TVertex>
     {
-        public TimeTerminationCondition(IWeightedRandomWalk<TVertex, TEdge> rw, decimal time)
+        public TimeTerminationCondition(IRandomWalk<TVertex, TEdge> rw, decimal time)
             : base(rw, time)
         {   
         }
@@ -104,7 +104,7 @@ namespace RandomWalkAnalysis.Samplers
         private RandomWalkRevisitObserver<TVertex, TEdge> Observer;
         private int maxRehits = 0;
 
-        public RehitsTerminationCondition(IWeightedRandomWalk<TVertex, TEdge> rw, int rehits)
+        public RehitsTerminationCondition(IRandomWalk<TVertex, TEdge> rw, int rehits)
             : base(rw, 0)
         {
             Walk = rw;
@@ -125,7 +125,7 @@ namespace RandomWalkAnalysis.Samplers
             return maxRehits >= Rehits;
         }
 
-        public static RehitsTerminationCondition<TVertex, TEdge> IncrementalRehitsConditions(IWeightedRandomWalk<TVertex, TEdge> rw, int initialTarget, int maxTarget, int loopCount, int i)
+        public static RehitsTerminationCondition<TVertex, TEdge> IncrementalRehitsConditions(IRandomWalk<TVertex, TEdge> rw, int initialTarget, int maxTarget, int loopCount, int i)
         {
             var r = new RehitsTerminationCondition<TVertex, TEdge>(rw, initialTarget + (int)(((decimal)(i + 1) / (decimal)loopCount) * (decimal)(maxTarget - initialTarget)));                
             return r;

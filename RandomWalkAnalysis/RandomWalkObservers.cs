@@ -25,13 +25,13 @@ namespace RandomWalkAnalysis
         
     {
 
-        public RandomWalkStepObserver(IWeightedRandomWalk<TVertex, TEdge> sampler)
+        public RandomWalkStepObserver(IRandomWalk<TVertex, TEdge> sampler)
             : base(sampler)
         {            
         }
 
 
-        protected override void Observed_Transition(IWeightedRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
+        protected override void Observed_Transition(IRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
         {   
             OnObservation(current, transition, weight);
         }
@@ -50,7 +50,7 @@ namespace RandomWalkAnalysis
         public Dictionary<TVertex, decimal> StateWeights { private set; get; }
 
 
-        public RandomWalkRevisitObserver(IWeightedRandomWalk<TVertex, TEdge> sampler)
+        public RandomWalkRevisitObserver(IRandomWalk<TVertex, TEdge> sampler)
             : base(sampler)
         {
             VisitSteps = new Dictionary<TVertex, List<decimal>>();
@@ -59,7 +59,7 @@ namespace RandomWalkAnalysis
 
 
 
-        protected override void Observed_Transition(IWeightedRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
+        protected override void Observed_Transition(IRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
         {
             
             List<decimal> vsv;
@@ -92,7 +92,7 @@ namespace RandomWalkAnalysis
         public decimal Coverage { get { return ((decimal)VisitedStates / (decimal)TotalStates); } }
         public int TotalStates { get; private set; }
 
-        public RandomWalkCoverageObserver(IWeightedRandomWalk<TVertex, TEdge> sampler, int totalStates)
+        public RandomWalkCoverageObserver(IRandomWalk<TVertex, TEdge> sampler, int totalStates)
             : base(sampler)
         {
             TotalStates = totalStates;
@@ -100,7 +100,7 @@ namespace RandomWalkAnalysis
         }
 
 
-        protected override void Observed_Transition(IWeightedRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
+        protected override void Observed_Transition(IRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
         {
             if (visited.Add(current))
                 OnObservation(current, transition, weight);
@@ -121,7 +121,7 @@ namespace RandomWalkAnalysis
         private RandomWalkCoverageObserver<TVertex, TEdge> coverage;
         private IUndirectedGraph<TVertex, TEdge> targetGraph;
 
-        public RandomWalkDegreeCoverageObserver(IWeightedRandomWalk<TVertex, TEdge> obs, IUndirectedGraph<TVertex, TEdge> targetGraph)   
+        public RandomWalkDegreeCoverageObserver(IRandomWalk<TVertex, TEdge> obs, IUndirectedGraph<TVertex, TEdge> targetGraph)   
             : base(obs)
         {
             this.targetGraph = targetGraph;
@@ -146,7 +146,7 @@ namespace RandomWalkAnalysis
         }
 
 
-        protected override void Observed_Transition(IWeightedRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
+        protected override void Observed_Transition(IRandomWalk<TVertex, TEdge> sampler, TVertex previous, TVertex current, TEdge transition, decimal weight)
         {
             
         }

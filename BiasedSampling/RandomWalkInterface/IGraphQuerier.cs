@@ -75,15 +75,7 @@ namespace RandomWalks.RandomWalkInterface {
 		/// <param name="edge">The state to be queried</param>
 		/// <returns>The weight of the state</returns>
 		decimal VertexWeight(TVertex vertex);
-
-		/// <summary>
-		/// Given a vertex returns a random adjecent edge index based on the selection policy (i.e. weighted or unweighted)
-		/// </summary>
-		/// <param name="vertex"></param>
-		/// <returns></returns>
-		int RandomAdjecentEdgeIndex(TVertex vertex);
-
-
+		
 	}
 
 	

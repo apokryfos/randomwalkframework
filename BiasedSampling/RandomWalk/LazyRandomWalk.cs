@@ -7,7 +7,7 @@ using QuickGraph;
 using RandomWalks.Querier;
 
 namespace RandomWalks.RandomWalk {
-	public abstract class LazySimpleRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public abstract class LazySimpleRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IRandomWalk<TVertex, TEdge>
 	  where TEdge : IEdge<TVertex> {
 		public LazySimpleRandomWalk(TVertex entryPoint, UnweightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> name)
 			: base(entryPoint, targetGraph, name) {
@@ -37,7 +37,7 @@ namespace RandomWalks.RandomWalk {
 			return base.GetTransitionWeight(transition) * 0.5M;
 		}
 	}
-	public abstract class LazyWeightedRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IWeightedRandomWalk<TVertex, TEdge>
+	public abstract class LazyWeightedRandomWalk<TVertex, TEdge> : RandomWalk<TVertex, TEdge>, IRandomWalk<TVertex, TEdge>
 	  where TEdge : IEdge<TVertex> {
 		public LazyWeightedRandomWalk(TVertex entryPoint, WeightedGraphQuerier<TVertex, TEdge> targetGraph, KeyValuePair<string, string> name)
 			: base(entryPoint, targetGraph, new KeyValuePair<string, string>("L" + targetGraph.PolicyName.Key, "Lazy " + targetGraph.PolicyName.Value)) {

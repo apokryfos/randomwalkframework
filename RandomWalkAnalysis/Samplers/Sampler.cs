@@ -10,7 +10,7 @@ namespace RandomWalkAnalysis.Samplers {
 
 		public const int vcount = 500;
 
-		public virtual IWeightedRandomWalk<TVertex, TEdge> RandomWalk { get; protected set; }
+		public virtual IRandomWalk<TVertex, TEdge> RandomWalk { get; protected set; }
 		protected List<RandomWalkCumulativeLogger<TVertex, TEdge>> loggers = new List<RandomWalkCumulativeLogger<TVertex, TEdge>>();
 		protected List<RandomWalkObserver<TVertex, TEdge>> observers = new List<RandomWalkObserver<TVertex, TEdge>>();
 		protected ITerminationConditions<TVertex, TEdge> terminationCondition;
@@ -59,7 +59,7 @@ namespace RandomWalkAnalysis.Samplers {
 
 		}
 
-		public Sampler(IWeightedRandomWalk<TVertex, TEdge> rw, ITerminationConditions<TVertex, TEdge> c) {
+		public Sampler(IRandomWalk<TVertex, TEdge> rw, ITerminationConditions<TVertex, TEdge> c) {
 			this.RandomWalk = rw;
 			terminationCondition = c;
 			RandomWalk.Terminated += new EventHandler(RandomWalk_Terminated);

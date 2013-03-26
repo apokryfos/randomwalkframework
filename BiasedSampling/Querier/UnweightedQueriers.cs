@@ -45,8 +45,6 @@ namespace RandomWalks.Querier
 
 			public decimal VertexWeight(TVertex vertex) { return 0.0M; }
 
-			public int RandomAdjecentEdgeIndex(TVertex vertex) { return 0; }
-
 			#endregion
 		}
 		private class DirectedGraphQuerier : IGraphQuerier<TVertex, TEdge> {			
@@ -66,9 +64,7 @@ namespace RandomWalks.Querier
 			public decimal EdgeWeight(TEdge edge) { return 0.0M; }
 
 			public decimal VertexWeight(TVertex vertex) { return 0.0M; }
-
-			public int RandomAdjecentEdgeIndex(TVertex vertex) { return 0; }
-
+				
 			#endregion
 
 			#region IDisposable Members
@@ -100,8 +96,6 @@ namespace RandomWalks.Querier
 			public decimal EdgeWeight(TEdge edge) { return 0.0M; }
 
 			public decimal VertexWeight(TVertex vertex) { return 0.0M; }
-
-			public int RandomAdjecentEdgeIndex(TVertex vertex) { return 0; }
 
 			#endregion
 
@@ -178,10 +172,6 @@ namespace RandomWalks.Querier
 
 		public virtual decimal VertexWeight(TVertex vertex) {
 			return AdjecentDegree(vertex);
-		}
-
-		public virtual int RandomAdjecentEdgeIndex(TVertex vertex) {
-			return r.Next(AdjecentDegree(vertex));
 		}
 
 		#endregion

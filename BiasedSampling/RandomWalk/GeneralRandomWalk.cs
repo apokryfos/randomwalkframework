@@ -16,7 +16,7 @@ namespace RandomWalks {
 	/// <typeparam name="TVertex">Type of vertices (states) encountered</typeparam>
 	/// <typeparam name="TEdge">Type of edges(transitions) encountered</typeparam>
 
-	public class RandomWalk<TVertex, TEdge> : IWeightedRandomWalk<TVertex, TEdge>
+	public class RandomWalk<TVertex, TEdge> : IRandomWalk<TVertex, TEdge>
 		where TEdge : IEdge<TVertex> {
 
 		/// <summary>
@@ -39,12 +39,13 @@ namespace RandomWalks {
 		public RandomWalk(TVertex entryPoint, IGraphQuerier<TVertex, TEdge> gq, KeyValuePair<string, string> name) {
 			Querier = gq;
 			this.CurrentState = entryPoint;
-			this.entryPoint = entryPoint;
+			this.InitialState = entryPoint;
+			this.PreviousState = default(TVertex);
 			this.Name = name;
 
 		}
 
-		#region IWeightedRandomWalk<TVertex,TEdge, decimal> Members
+		#region IRandomWalk<TVertex,TEdge, decimal> Members
 
 		public void Terminate() {
 
@@ -70,7 +71,7 @@ namespace RandomWalks {
 		/// Additional initialization instructions go here
 		/// </summary>
 		public virtual void Initialize() {
-			this.CurrentState = entryPoint;
+			this.CurrentState = this.InitialState;
 			TotalSteps = 0;
 			DiscreetSteps = 0;
 		}
@@ -81,9 +82,9 @@ namespace RandomWalks {
 		/// </summary>
 		/// <param name="current">The current state of the walk. Provided to allow flexibility.</param>
 		/// <returns>Should return the next transition or default(TEdge) to wait</returns>
-		protected virtual TEdge ChooseNext(TVertex current) {
-			int ind = Querier.RandomAdjecentEdgeIndex(current);
-			if (ind >= 0) {
+		protected virtual TEdge ChooseNext(TVertex current) {			
+			if (Querier.AdjecentDegree(current) > 0) {
+				int ind = (int)(r.NextDouble() * (double)Querier.AdjecentDegree(current));
 				return Querier.AdjecentEdge(current, ind);
 			} else {
 				return default(TEdge);
@@ -102,8 +103,10 @@ namespace RandomWalks {
 
 
 
-			if (!object.ReferenceEquals(next, default(TEdge)))
+			if (!object.ReferenceEquals(next, default(TEdge))) {
+				PreviousState = CurrentState;
 				CurrentState = next.GetOtherVertex(CurrentState);
+			}
 
 			if (Step != null) {
 				//If the transition is null then the walk waits
@@ -134,8 +137,9 @@ namespace RandomWalks {
 		}
 
 		public TVertex CurrentState { get; private set; }
+		public TVertex PreviousState { get; private set; }
+		public TVertex InitialState { get; private set; }
 
-		private TVertex entryPoint;
 
 		/// <summary>
 		/// Gets the number of transitions that might be performed from a specific state
