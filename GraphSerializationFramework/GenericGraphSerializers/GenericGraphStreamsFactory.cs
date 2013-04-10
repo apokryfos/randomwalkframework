@@ -8,17 +8,17 @@ using GraphSerializationFramework.BinaryGraphStreams;
 using QuickGraph;
 using GraphSerializationFramework.GraphStreamFramework;
 using GraphSerializationFramework.TextGraphStreams;
+using GraphSerializationFramework.NETSerializer;
 
 namespace GraphSerializationFramework.GenericGraphSerializers {
 
 
 	static class ReaderWriterTypes<TVertex, TEdge> 
-		where TEdge : IEdge<TVertex> 
-		where TVertex : IConvertible	
+		where TEdge : IEdge<TVertex> 		
 	{		
-		private static string[] extensions = { ".bin", ".csv", ".txt" };
-		private static Type[] readers = { typeof(BinaryGraphReader), typeof(TextGraphReader<TVertex, TEdge>), typeof(TextGraphReader<TVertex, TEdge>) };
-		private static Type[] writers = { typeof(BinaryGraphWriter), typeof(CSVGraphWriter<TVertex, TEdge>), typeof(TextGraphWriter<TVertex, TEdge>) };
+		private static string[] extensions = { ".nbin", ".bin", ".csv", ".txt" };
+		private static Type[] readers = { typeof(SerializationReader<TVertex,TEdge>), typeof(BinaryGraphReader), typeof(TextGraphReader<TVertex, TEdge>), typeof(TextGraphReader<TVertex, TEdge>) };
+		private static Type[] writers = { typeof(SerializationWriter<TVertex,TEdge>), typeof(BinaryGraphWriter), typeof(CSVGraphWriter<TVertex, TEdge>), typeof(TextGraphWriter<TVertex, TEdge>) };
 
 		public static KeyValuePair<Type, Type> GetReaderAndWriterType(string extention) {
 			
@@ -34,8 +34,7 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 
 
 	public static class GenericGraphReaderFactory<TVertex, TEdge>
-		where TEdge : IEdge<TVertex>
-		where TVertex : IConvertible {
+		where TEdge : IEdge<TVertex> {
 
 		#region Reader Per Extention
 		public static IGraphReader<TVertex, TEdge> GetGraphReaderForExtension(string extension, string filename, int bufferSize) {
@@ -77,8 +76,7 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 
 
 	public static class GenericGraphWriterFactory<TVertex, TEdge>
-		where TEdge : IEdge<TVertex>
-		where TVertex : IConvertible {
+		where TEdge : IEdge<TVertex> {
 
 
 

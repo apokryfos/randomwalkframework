@@ -12,8 +12,7 @@ using System.ComponentModel;
 
 namespace GraphSerializationFramework {
 	
-	class TextGraphReader<TVertex, TEdge> : GenericGraphReaderBase<TVertex, TEdge>, IGraphReader<TVertex, TEdge> 
-		where TVertex : IConvertible
+	class TextGraphReader<TVertex, TEdge> : GenericGraphReaderBase<TVertex, TEdge>, IGraphReader<TVertex, TEdge> 		
 		where TEdge : IEdge<TVertex> {
 		private StreamReader stream;
 		private int bufferSize;

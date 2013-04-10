@@ -42,6 +42,7 @@ namespace GraphSerializationFramework.GenericGraphSerializers {
 
 		protected IMutableVertexAndEdgeSet<TVertex, TEdge> ReadEntireGraph(bool directed) {
 			var g = CreateInstance(directed);
+
 			IVertexEdgeDictionary<TVertex, TEdge> adj = ReadAdjecencyList();
 			OnProgressChanged(0, "Started");
 			while (adj != null) {

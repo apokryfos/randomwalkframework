@@ -41,7 +41,7 @@ namespace GraphSerializationFramework {
 
 
 		#region IGraphReader Members
-		
+
 		public override IVertexEdgeDictionary<int, Edge<int>> ReadAdjecencyList() {
 			if (baseStream.Position == baseStream.Length) {
 				return null;
@@ -133,7 +133,8 @@ namespace GraphSerializationFramework {
 					stream.Dispose();
 				}
 				base.disposed = true;
-			}		}
+			}
+		}
 		#endregion
 
 	}
