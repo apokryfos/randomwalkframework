@@ -91,6 +91,19 @@ namespace RandomWalks {
 			}
 		}
 
+		/// <summary>
+		/// Simulates a transition of the walk
+		/// </summary>
+		/// <param name="From">Transition From</param>
+		/// <param name="To">Transition To</param>
+		/// <param name="TransitionRef">Transition along edge</param>
+		protected virtual void Transition(TVertex From, TVertex To, TEdge TransitionRef) {
+			TotalSteps += TimeIncrement;
+			DiscreetSteps++;
+			PreviousState = From;
+			CurrentState = To;			
+			OnStep(PreviousState, CurrentState, TransitionRef, GetTransitionWeight(TransitionRef));
+		}
 
 		/// <summary>
 		/// Simulates one step of the walk
@@ -98,32 +111,26 @@ namespace RandomWalks {
 		/// <returns>Returns the vertex that was reached after one step was simulated</returns>
 		public virtual TVertex NextSample() {
 			var next = ChooseNext(CurrentState);
-			TotalSteps += TimeIncrement;
-			DiscreetSteps++;
-
-
-
-			if (!object.ReferenceEquals(next, default(TEdge))) {
-				PreviousState = CurrentState;
-				CurrentState = next.GetOtherVertex(CurrentState);
-			}
-
-			if (Step != null) {
-				//If the transition is null then the walk waits
-				if (!object.ReferenceEquals(next, default(TEdge)))
-					Step(this, CurrentState, next.GetOtherVertex(CurrentState), next, GetTransitionWeight(next));
-				else
-					Step(this, CurrentState, CurrentState, next, GetTransitionWeight(next));
-			}
-			
+			Transition(CurrentState, (!object.Equals(next, default(TEdge))?next.GetOtherVertex(CurrentState):CurrentState), next);
 			return CurrentState;
 		}
-
+		/// <summary>
+		/// Method to fire the step event
+		/// </summary>
+		/// <param name="CurrentState">The state that the walk was coming from</param>
+		/// <param name="NextState">The state the walk is moving to</param>
+		/// <param name="Transition">The edge the walk has taken</param>
+		/// <param name="TransitionWeight">The weight of the transition taken</param>
+		protected void OnStep(TVertex CurrentState, TVertex NextState, TEdge Transition, decimal TransitionWeight) {
+			if (Step != null) {
+				Step(this, CurrentState, NextState, Transition, TransitionWeight);
+			}
+		}
 		/// <summary>
 		/// Holds the steps that the walk took
 		/// </summary>
 		public virtual ulong DiscreetSteps {
-			private set;
+			protected set;
 			get;
 		}
 
@@ -133,11 +140,11 @@ namespace RandomWalks {
 		/// </summary>
 		public virtual decimal TotalSteps {
 			get;
-			private set;
+			protected set;
 		}
 
-		public TVertex CurrentState { get; private set; }
-		public TVertex PreviousState { get; private set; }
+		public TVertex CurrentState { get; protected set; }
+		public TVertex PreviousState { get; protected set; }
 		public TVertex InitialState { get; private set; }
 
 
