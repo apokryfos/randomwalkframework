@@ -53,25 +53,21 @@ namespace RandomWalks.Querier
 			Dictionary<TEdge, decimal> weightsMap = new Dictionary<TEdge, decimal>();
 			GeneralWeightedQuerier<TVertex, TEdge> parent;
 
-			public WeightedEdgeMapping(GeneralWeightedQuerier<TVertex, TEdge> parent, TVertex vertex, IList<TEdge> adjecentEdges, IGraph<TVertex, TEdge> targetGraph, WeightFunction<IGraph<TVertex, TEdge>, TVertex, TEdge> weightFunc) {
+			public WeightedEdgeMapping(GeneralWeightedQuerier<TVertex, TEdge> parent, TVertex vertex, IList<TEdge> adjecentEdges, WeightFunction<IGraph<TVertex, TEdge>, TVertex, TEdge> weightFunc) {
 				this.vertex = vertex;
 				this.parent = parent;
 
-				if (adjecentEdges.Count > 0) {
-					decimal cw = 0.0M;
-					parent.TryGetEdgeWeight(adjecentEdges[0], out cw);
-
-					weightsMap.Add(adjecentEdges[0], cw);
-					for (int i = 1; i < adjecentEdges.Count; i++) {
-						map.Add(cw);
-						decimal nw;
-						parent.TryGetEdgeWeight(adjecentEdges[i], out nw);
-						weightsMap.Add(adjecentEdges[i], nw);
-						cw += nw;
-					}
-					VertexWeight = cw;
-
+				
+				decimal cw = 0.0M;
+				decimal nw;
+				for (int i = 0; i < adjecentEdges.Count; i++) {
+					map.Add(cw);							
+					parent.TryGetEdgeWeight(adjecentEdges[i], out nw);
+					weightsMap.Add(adjecentEdges[i], nw);
+					cw += nw;						
 				}
+				VertexWeight = cw;
+
 			}
 
 			public decimal GetWeight(TEdge edge) {
@@ -83,15 +79,18 @@ namespace RandomWalks.Querier
 					return -1;
 
 				decimal wi = (decimal)weightedIndex * (decimal)VertexWeight;
-				if (weightsMap.Count == 1 || wi < map[0])
+				if (weightsMap.Count == 1) {
 					return 0;
-				else if (weightsMap.Count > 2) {
+				} else if (weightsMap.Count >= 2) {
 					var i = map.BinarySearch(wi);
-					if (i < 0)
-						return ~i;
-					return i;
-				} else
-					return 1;
+					if (i < 0) {
+						return (~i) - 1;
+					} else {
+						return i;
+					}
+				} else {
+					return -1;
+				}
 
 			}
 		}
@@ -118,33 +117,33 @@ namespace RandomWalks.Querier
 			wem = VertexMapping(edge.Source);
 			return wem.GetWeight(edge);
 		}
-
 		#endregion
 
 		protected virtual WeightedEdgeMapping VertexMapping(TVertex vertex) {
 			WeightedEdgeMapping wem;
-			SyncRoot.EnterUpgradeableReadLock();
+			SyncRoot.EnterReadLock();
 			try {
+				if (edgeWeightMap.TryGetValue(vertex, out wem)) {
+					return wem;
+				} else if (lastVertex.Key.Equals(vertex) && lastVertex.Value != null) {
+					return lastVertex.Value;
+				}
+			} finally {
+				SyncRoot.ExitReadLock();
+			}
 
-				if (!edgeWeightMap.TryGetValue(vertex, out wem)) {
-					if (!lastVertex.Key.Equals(vertex) || lastVertex.Value == null) {
-						var edgelist = this.AdjecentEdges(vertex).ToList();
-						wem = new WeightedEdgeMapping(this, vertex, edgelist, targetGraph, wf);
-						SyncRoot.EnterWriteLock();
-						if (!edgeWeightMap.ContainsKey(vertex) && edgelist.Count < DegreeThreshold) {
-							edgeWeightMap.Add(vertex, wem);
-						} else {
-							lastVertex = new KeyValuePair<TVertex, WeightedEdgeMapping>(vertex, wem);
-						}
-						SyncRoot.ExitWriteLock();
-					} else {
-						wem = lastVertex.Value;
-					}					
+			SyncRoot.EnterWriteLock();
+			try {
+				var edgelist = this.AdjecentEdges(vertex).ToList();
+				wem = new WeightedEdgeMapping(this, vertex, edgelist, wf);				
+				if (!edgeWeightMap.ContainsKey(vertex) && edgelist.Count < DegreeThreshold) {
+					edgeWeightMap.Add(vertex, wem);
+				} else {
+					lastVertex = new KeyValuePair<TVertex, WeightedEdgeMapping>(vertex, wem);
 				}
 				return wem;
-
 			} finally {
-				SyncRoot.ExitUpgradeableReadLock();
+				SyncRoot.ExitWriteLock();
 			}
 		}
 

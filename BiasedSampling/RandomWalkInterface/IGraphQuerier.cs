@@ -57,7 +57,7 @@ namespace RandomWalks.RandomWalkInterface {
 		///		The weight of the state is 16.0
 		///		The weighted index which corresponds to transition 1 ranges from 0.0(inclusive) to 10.0/16.0 (exclusive)
 		///		Respectively the weighted index which corresponds to transition 2 ranges from 10.0/16.0 to (15.0/16.0)
-		///		etc.		
+		///		Finally the weighted index which corresponds to transition 3 ranges from 15.0/16.0 to 1.0		
 		/// </example>
 		TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex);
 

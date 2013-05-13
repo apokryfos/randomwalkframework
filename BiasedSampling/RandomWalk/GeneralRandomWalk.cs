@@ -45,6 +45,17 @@ namespace RandomWalks {
 
 		}
 
+		/// <summary>
+		/// Constructs a general random walk
+		/// </summary>
+		/// <param name="entryPoint">Initial state</param>
+		/// <param name="gq">Querier on the graph</param>
+		/// <param name="name">The name of the walk. Key is the short name and value the long name</param>
+		public RandomWalk(TVertex entryPoint, IGraphQuerier<TVertex, TEdge> gq) :
+			this(entryPoint,gq,gq.PolicyName) {
+			
+		}
+
 		#region IRandomWalk<TVertex,TEdge, decimal> Members
 
 		public void Terminate() {
@@ -84,8 +95,7 @@ namespace RandomWalks {
 		/// <returns>Should return the next transition or default(TEdge) to wait</returns>
 		protected virtual TEdge ChooseNext(TVertex current) {			
 			if (Querier.AdjecentDegree(current) > 0) {
-				int ind = (int)(r.NextDouble() * (double)Querier.AdjecentDegree(current));
-				return Querier.AdjecentEdge(current, ind);
+				return Querier.WeightedAdjacentEdge(current, (decimal)r.NextDouble());
 			} else {
 				return default(TEdge);
 			}

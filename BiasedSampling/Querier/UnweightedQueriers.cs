@@ -163,7 +163,7 @@ namespace RandomWalks.Querier
 			
 
 		public virtual TEdge WeightedAdjacentEdge(TVertex vertex, decimal weightedIndex) {
-			return AdjecentEdge(vertex, (int)(AdjecentDegree(vertex)*weightedIndex));
+			return AdjecentEdge(vertex, (int)((decimal)AdjecentDegree(vertex)*weightedIndex));
 		}
 
 		public virtual decimal EdgeWeight(TEdge edge) {

@@ -5,6 +5,8 @@ using System.Text;
 using QuickGraph;
 using System.IO;
 using RandomWalks.Querier;
+using DataStructures;
+using System.Diagnostics;
 
 
 
@@ -74,14 +76,12 @@ namespace RandomWalks.Weights {
 		
 		public static decimal EdgeWeight<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> targetGraph, TEdge e, double c)
 			where TEdge : IEdge<TVertex> {
-			if (e.IsSelfEdge<TVertex,TEdge>())
-				return 1.0M;			
-			HashSet<TVertex> l = new HashSet<TVertex>(targetGraph.AdjacentEdges(e.Source).Select(ed=>ed.GetOtherVertex(e.Source)));
-			l.Remove(e.Target);
-			l.IntersectWith(targetGraph.AdjacentEdges(e.Target).Select(ed => ed.GetOtherVertex(e.Target)));
+			if (e.Source.Equals(e.Target))
+				return 1.0M;
 			
-			
-			return 1.0M + (decimal)c*(decimal)l.Count;
+			var t = targetGraph.GetContainingTriangles(e);
+			int cnt = t.Count();			
+			return 1.0M + (decimal)c*(decimal)cnt;
 		}
 
 	}

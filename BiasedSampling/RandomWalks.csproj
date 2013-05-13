@@ -106,6 +106,7 @@
     <Compile Include="MetropolisRandomWalk.cs" />
     <Compile Include="RandomWalk\GeneralRandomWalk.cs" />
     <Compile Include="Weights\CFRPFunctions.cs" />
+    <Compile Include="Weights\TrianglesEnumerator.cs" />
     <Compile Include="Weights\WeightedRandomWalks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -130,6 +131,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataStructures\DataStructures.csproj">
+      <Project>{23D7A810-1E17-40D5-98B4-B55939AC7DD4}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RNG\RNG.csproj">
       <Project>{54BC7FD2-0430-4EED-930A-51BF89AD41AC}</Project>
       <Name>RNG</Name>
